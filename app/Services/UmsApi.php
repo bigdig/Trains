@@ -5,7 +5,7 @@ use Log;
 
 class UmsApi{
 
-//    const URL = 'http://ums-gateway.rybbaby.com/api/gateway';
+//    const URL = '';
     const TEST_URL = 'http://192.168.0.4:8180/api/gateway';
 
     protected $key = 'ums';
