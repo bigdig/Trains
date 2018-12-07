@@ -37,13 +37,13 @@ return [
      * */
     "mini"=>[
 		'1'=>[
-			'app_id' => 'wx784738de34f8f5d6',
-			'secret' => '78050e466186eec8bcb9c1eace77d245',
+			'app_id' => '',
+			'secret' => '',
 			// 指定 API 调用返回结果的类型：array(default)/collection/object/raw/自定义类名
 			'response_type' => 'array',
 			//商户号、api秘钥
-			'mch_id' =>'1509666461',
-			'key'    =>'0A36F242715949748F648178531EE85F',
+			'mch_id' =>'',
+			'key'    =>'',
 			'cert_path'=> './apiclient_cert.pem', 
 			'key_path' => './apiclient_key.pem',   
 			//回调地址
@@ -55,8 +55,8 @@ return [
 			'template_id'=>'_fa2cDJVj6QNuobc_gKCj_tilgw6MnWiW4j5q_WR0eo' //消息通知模板
 		],
 		'2' =>[
-			'app_id' =>'wx2c7959c3c45150b2',
-            'secret' =>'c1909a41aa602373f4b2178e7b4ca515',
+			'app_id' =>'',
+            'secret' =>'',
 
             //回调地址
             'notify_url'=>'',
