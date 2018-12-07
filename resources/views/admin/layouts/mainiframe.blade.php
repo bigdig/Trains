@@ -56,34 +56,34 @@ License: You must have a valid license purchased only from themeforest(the above
     <link rel="stylesheet" href="{{asset('assets/admin/datetimepicker/bootstrap-datetimepicker.min.css')}}">
     <!-- END THEME LAYOUT STYLES -->
     {{--<link rel="shortcut icon" href="favicon.ico" />--}}
-
-    <style>
-        body{
-            background: none;
-        }
-    </style>
 </head>
 <!-- END HEAD -->
 
-<body class="">
-
+<body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white page-md">
+<div class="page-wrapper">
     <!-- BEGIN HEADER -->
+    @include('admin.layouts.header')
+
     <!-- END HEADER -->
     <!-- BEGIN HEADER & CONTENT DIVIDER -->
     <div class="clearfix"> </div>
     <!-- END HEADER & CONTENT DIVIDER -->
     <!-- BEGIN CONTAINER -->
-    <div class="">
-        <!-- BEGIN SIDEBAR -->
+    <div class="page-container">
 
+        <!-- BEGIN SIDEBAR -->
+      @include('admin.layouts.sidebar')
         <!-- END SIDEBAR -->
         <!-- BEGIN CONTENT -->
-        <div>
+        <div class="page-content-wrapper">
             <!-- BEGIN CONTENT BODY -->
-            <div class="page-content">
+            <div class="page-content" style="padding: 0">
                 <!-- BEGIN PAGE HEADER-->
+                @include('admin.layouts.page_header')
                 <!-- END PAGE HEADER-->
-                @yield('content')
+                <iframe  class=""  width="100%" height="890" id="mainiframe" name="mainiframe" frameborder="0" src="{{route('chart.index')}}">
+                </iframe>
+
             </div>
             <!-- END CONTENT BODY -->
         </div>
@@ -94,8 +94,9 @@ License: You must have a valid license purchased only from themeforest(the above
     </div>
     <!-- END CONTAINER -->
     <!-- BEGIN FOOTER -->
+    @include('admin.layouts.footer')
     <!-- END FOOTER -->
-
+</div>
 <!--[if lt IE 9]>
 <script src="{{asset('vendor/respond.min.js')}}"></script>
 <script src="{{asset('vendor/excanvas.min.js')}}"></script>
@@ -122,6 +123,21 @@ License: You must have a valid license purchased only from themeforest(the above
 <script src="{{asset('assets/admin/datetimepicker/bootstrap-datetimepicker.min.js')}}"></script>
 
 {{--无权限弹窗_刷新页面--}}
+<script>
+    $(document).ready(function(){
+//        $('.nav-item').click(function () {
+            //  this.setAttribute("class", "nav-item active");
+//            $('.nav-item').each( function( index, val ) {
+//                if($(val).hasClass('active')){
+//                    $(val).removeClass('active');
+//                }
+//            });
+
+
+//        });
+    })
+
+</script>
 @if(session('error') == 'no_permissions')
     <script type="text/javascript">
         $(document).ready(function(){

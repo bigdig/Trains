@@ -8,6 +8,46 @@
  * @author ADKi
  */
 return [
+	'report' =>[
+		'index'=>[
+			'name'=>'培训报表',
+			'desc'=>'培训报表'
+		],
+	],
+	'teach'  =>[
+        'index'=>[
+            'name'=>'教师管理',
+            'desc'=>'教师管理'
+        ]
+    ],
+	'course' =>[
+        'index'=>[
+            'name'=>'课程管理',
+            'desc'=>'课程管理'
+        ],
+        'create'=>[
+            'name'=>'新增课程',
+            'desc'=>'新增课程'
+        ],
+        'edit' =>[
+            'name'=>'编辑课程',
+            'desc'=>'编辑课程'
+        ]
+    ],
+    'profess'=>[
+        'index'=>[
+            'name'=>'职称管理',
+            'desc'=>'职称管理'
+        ],
+        'create'=>[
+            'name'=>'编辑职称',
+            'desc'=>'编辑职称'
+        ],
+        'edit'=>[
+            'name'=>'编辑职称',
+            'desc'=>'编辑职称'
+        ]
+    ],
     'students' => [
         'index' => [
             'name' => '学员名单',
@@ -33,6 +73,10 @@ return [
             'name' => '新增',
             'desc' => '新增培训通知',
         ],
+		'edit' => [
+            'name' => '编辑',
+            'desc' => '编辑培训通知',
+        ],
     ],
     'admin' => [
         'index' => [
@@ -48,7 +92,11 @@ return [
         'edit' => [
             'name' => '用户编辑',
             'desc' => '编辑用户信息',
-        ]
+        ],
+		'create' => [
+            'name' => '用户新增',
+            'desc' => '新增用户信息',
+        ],
     ],
     'role' => [
         'index' => [

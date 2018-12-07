@@ -18,15 +18,15 @@
                     </div>
                     <form style="float: right;" class="form-inline" method="get" action="{{route('entry.index')}}">
                         <div class="form-group">
-                            <input type="text" class="form-control" name="contract_no" id="contract_no" placeholder="合同号">
+                            <input type="text" class="form-control" name="contract_no" id="contract_no" placeholder="合同号" value="{{ isset($search['contract_no'])?$search['contract_no']:'' }}">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" name="park_name" id="park_name" placeholder="园所名称">
+                            <input type="text" class="form-control" name="park_name" id="park_name" placeholder="园所名称" value="{{ isset($search['park_name'])?$search['park_name']:'' }}">
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" name="apply_phone" id="apply_phone" placeholder="报名人手机号">
+                            <input type="text" class="form-control" name="apply_phone" id="apply_phone" placeholder="报名人手机号" value="{{ isset($search['apply_phone'])?$search['apply_phone']:'' }}">
                         </div>
-                        <div class="form-group">
+						<div class="form-group">
                             <label for="">培训主题</label>
                             <select class="form-control" name="train_id" id="train_id">
                                 <option value="">全部</option>
@@ -43,7 +43,7 @@
                                 <option value="2">线下</option>
                             </select>
                         </div>
-                        <div class="form-group">
+						<div class="form-group">
                             <label for="">支付状态</label>
                             <select class="form-control" name="is_paid" id="is_paid">
                                 <option value="">全部</option>
@@ -52,7 +52,7 @@
                             </select>
                         </div>
                         <button type="submit" class="btn btn-default">搜索</button>
-                        <button type="button" onclick="export_data()" class="btn btn-default">导出</button>
+						<button type="button" onclick="export_data()" class="btn btn-default">导出</button>
                         <a href="{{ route('entry.create') }}" class="btn green btn-outline">
                             <i class="fa fa-edit"></i>
                             新增
@@ -100,7 +100,11 @@
 											审核未通过
 										@elseif($list->status == 6)
 											已审核
-										@endif
+                                        @elseif($list->status ==7)
+                                            已完成
+                                        @elseif($list->status ==-1)
+                                            <span style="color:red;">已删除</span>
+                                        @endif
 									</td>
                                     <td>
                                         @if($list->from ==1)
@@ -132,9 +136,11 @@
                                     <td>{{ $list->trade_no }}</td>
                                     <td>
                                         <a href="{{ route('students.index',['order_id'=>$list->id]) }}" class="btn btn-outline green btn-sm purple"><i class="fa fa-search-plus"></i>查看报名</a>
-										@if($list->is_paid ==1 && $list->status !=1 && $list->from ==1)
+										@if($list->is_paid ==1 && $list->status !=1 && $list->from ==1 )
+											<!--
                                         <a href="javascript:void(0);" onclick="show_refund({{ $list->id }})" class="btn btn-outline green btn-sm purple"><i class="fa fa-money"></i>退款</a>
-                                        @endif
+											-->
+										@endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -180,13 +186,14 @@
 {{--尾部前端资源--}}
 @section('script')
     <script type="text/javascript">
-        var is_paid = "{{ isset($search['is_paid'])?$search['is_paid']:'' }}";
-        $("#is_paid").val(is_paid);
-        var from = "{{ isset($search['from'])?$search['from']:'' }}";
-        $("#from").val(from);
-        var train_id = "{{ isset($search['train_id'])?$search['train_id']:'' }}";
-        $("#train_id").val(train_id);
-        //导出
+		var is_paid = "{{ isset($search['is_paid'])?$search['is_paid']:'' }}";
+		$("#is_paid").val(is_paid);
+		var from = "{{ isset($search['from'])?$search['from']:'' }}";
+		$("#from").val(from);
+		var train_id = "{{ isset($search['train_id'])?$search['train_id']:'' }}";
+		$("#train_id").val(train_id);
+	
+		//导出
         function export_data(){
             var contract_no   = $("#contract_no").val();
             var park_name     = $("#park_name").val();

@@ -25,7 +25,7 @@
                             <div class="form-group">
                                 <label class="col-md-3 control-label" for="train_id">培训主题</label>
                                 <div class="col-md-9">
-                                    <select class="checkbox" name="train_id" id="train_id">
+                                    <select class="checkbox form-control" name="train_id" id="train_id">
                                         <option value="">选择培训</option>
                                         @foreach($trains as $train)
                                             <option value="{{ $train->id }}">{{ $train->title }}</option>

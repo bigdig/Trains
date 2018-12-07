@@ -53,7 +53,7 @@
                             <thead>
                             <tr role="row" class="heading">
                                 <th > 培训主题名称 </th>
-                                <th > 预计报名人数 </th>
+                                <th > 可报名人数 </th>
                                 <th > 已报名人数 </th>
                                 <th > 报名有效期 </th>
                                 <th > 培训时间 </th>
@@ -74,8 +74,10 @@
                                         <td>
                                             @if($list->status ==1)
                                                 待发布
-                                            @else
+                                            @elseif($list->status ==2)
                                                 已发布
+                                            @else
+                                                <span style="color:red;">已删除</span>
                                             @endif
                                         </td>
                                         <td>

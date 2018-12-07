@@ -16,14 +16,16 @@
                         <i class="icon-settings font-red"></i>
                         <span class="caption-subject font-red sbold uppercase">用户管理</span>
                     </div>
-                   {{-- <div class="actions">
+					@if( Auth::user()->hasRole('admin') )
+                   <div class="actions">
                         <div class="btn-group">
                             <a href="{{ route('user.create') }}" class="btn green btn-outline">
                                 <i class="fa fa-edit"></i>
-                                添加权限
+                                添加用户
                             </a>
                         </div>
-                    </div>--}}
+                    </div>
+					@endif
                 </div>
                 <div class="portlet-body">
                     <div class="table-container">

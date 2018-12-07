@@ -2,46 +2,6 @@
 
 {{--顶部前端资源--}}
 @section('styles')
-    <style>
-        label{
-            margin-right:10px;
-        }
-        .dinfo{
-            display: inline-block;
-        }
-        .vtop{
-            vertical-align: top;
-        }
-        .form-group{
-            display: inline-block;
-            vertical-align: top;
-            /*width: 30%;*/
-            margin-right: 100px;
-        }
-        .select_pic{
-           display:inline-block;
-        }
-		.select_pic_block{
-			position:absolute;
-			top:0;
-			left:110%;
-		}
-        .w_100{
-            width:100%;
-        }
-        .w_7{
-            width: 9%;
-        }
-        .title_info{
-            font-size: 18px;
-            font-weight: bold;
-            padding-bottom: 10px;
-        }
-		.radio{
-			display: inline-block !important;
-		}
-		
-    </style>
     <link href="{{ asset('vendor/bootstrap-fileinput/bootstrap-fileinput.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('vendor/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('vendor/select2/css/select2-bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
@@ -69,23 +29,9 @@
                             <input type="hidden" name="_method" value="PUT">
                         @endif
                         <div class="form-body">
-                            <h3 class="title_info"><span style="color:red">*</span>培训基础信息填写</h3>
-							@if(Auth::user()->hasRole('admin') ) 
-							<div class="form-group w_100">
-                                <label for=""><span style="color:red">*</span>适用园所</label>
-                                <div class="radio">
-                                    <label class="radio-inline">
-                                        <input type="radio" checked name="train_category" {{ $is_edit?($train->status ==2?'disabled':''):'' }} value="1"> 亲子园
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="train_category" {{ $is_edit?($train->status ==2?'disabled':''):'' }} value="2">幼儿园
-                                    </label>
-                                </div>
-                            </div>
-							@endif
-                            <div class="form-group w_100 @if($errors->has('title')) has-error @endif">
+                            <div class="form-group @if($errors->has('title')) has-error @endif">
                                 <label><span style="color:red">*</span>培训主题名称</label>
-                                <div class="input-icon dinfo">
+                                <div class="input-icon">
                                     <i class="fa fa-keyboard-o font-green"></i>
                                     <input type="text" class="form-control" name="title" placeholder="培训主题名称"
                                            value="{{ $is_edit ? $train->title : old('title') }}"
@@ -95,62 +41,61 @@
                                     @endif
                                 </div>
                             </div>
-                            <div class="form-group W_100">
+                            <div class="form-group last">
                                 <label class="control-label"><span style="color:red">*</span>banner图(建议尺寸...)</label>
-                                <div class="dinfo vtop block">
+                                <div class="">
                                     <div class="fileinput fileinput-new" data-provides="fileinput">
-                                        <div class="fileinput-new thumbnail" style="width: 180px; height: 150px;">
+                                        <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
                                             <img src="@if($is_edit){{ $train->banner ?url($train->banner): asset('assets/admin/img/no_image.png') }}@else{{ asset('assets/admin/img/no_image.png') }}@endif" alt="" /> </div>
-                                        <div class="fileinput-preview fileinput-exists thumbnail" style="width: 180px;height: 150px;"> </div>
-                                        <div class="select_pic">
+                                        <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;"> </div>
+                                        <div>
                                             <span class="btn default btn-file">
                                                 <span class="fileinput-new"> 选择图片 </span>
                                                 <span class="fileinput-exists"> 更换 </span>
                                                 <input type="file" name="banner">
                                             </span>
-                                            <a href="javascript:;"  class="btn  red fileinput-exists" data-dismiss="fileinput"> 删除 </a>
+                                            <a href="javascript:;" class="btn red fileinput-exists" data-dismiss="fileinput"> 删除 </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group w_100">
-                                <label class="w_7"><span style="color:red">*</span>报名有效期</label>
-                                <div class="input-group dinfo ">
+                            <div class="form-group">
+                                <label><span style="color:red">*</span>报名有效期</label>
+                                <div class="input-group">
                                     <input type="text" class="input-sm" name="apply_start" id="apply_start" value="{{ $is_edit ? $train->apply_start:'' }}">至
                                     <input type="text" class="input-sm" name="apply_end" id="apply_end" value="{{ $is_edit ? $train->apply_end:'' }}">
                                 </div>
                             </div>
-                            <div class="form-group w_100">
-                                <label  class="w_7"><span style="color:red">*</span>培训时间</label>
-                                <div class="input-group dinfo">
-                                    <input type="text" class="input-sm" name="train_start" id="train_start" value="{{ $is_edit ? $train->train_start:'' }}">至
-                                    <input type="text" class="input-sm" name="train_end" id="train_end" value="{{ $is_edit ? $train->train_end:'' }}">
-                                </div>
-                            </div>
-                            <div class="form-group w_100">
-                                <label  class="w_7"><span style="color:red">*</span>可报名人数</label>
-                                <div class="input-group dinfo">
+                            <div class="form-group">
+                                <label><span style="color:red">*</span>预计报名人数</label>
+                                <div class="input-group">
                                     <input type="number" class="input-sm" name="pre_num" id="pre_num" value="{{ $is_edit ? $train->pre_num:'' }}">人
                                 </div>
                             </div>
                             @if($is_edit)
-                            <div class="form-group dinfo w_100">
-                                <label  class="w_7">虚拟报名人数</label>
+                            <div class="form-group">
+                                <label>虚拟报名人数</label>
                                 <div class="input-group">
                                     <input type="number" class="input-sm" name="jia_sale_num" id="jia_sale_num" value="{{ $is_edit ? $train->jia_sale_num:'0' }}">人
                                 </div>
                             </div>
                             @endif
-                            <div class="form-group dinfo w_100">
-                                <label class="w_7"><span style="color:red">*</span>培训地点</label>
-                                <div class="input dinfo">
+                            <div class="form-group">
+                                <label><span style="color:red">*</span>培训地点</label>
+                                <div class="input">
                                     <input type="text" class="form-control" name="train_adress" id="train_adress" {{ $is_edit?($train->status ==2?'readonly':''):'' }} value="{{ $is_edit ? $train->train_adress:'' }}">
                                 </div>
                             </div>
-                            <h3 class="title_info"><span style="color:red">*</span>培训缴费设定</h3>
+                            <div class="form-group">
+                                <label><span style="color:red">*</span>培训时间</label>
+                                <div class="input-group">
+                                    <input type="text" class="input-sm" name="train_start" id="train_start" value="{{ $is_edit ? $train->train_start:'' }}">至
+                                    <input type="text" class="input-sm" name="train_end" id="train_end" value="{{ $is_edit ? $train->train_end:'' }}">
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label for=""><span style="color:red">*</span>是否付费</label>
-                                <div class="radio dinfo">
+                                <div class="radio">
                                     <label class="radio-inline">
                                         <input type="radio" onclick="change_free(0)" checked name="is_free" value="0"> 免费
                                     </label>
@@ -188,9 +133,9 @@
                                     <input type="text" class="input-sm" name="attr3_price_3" {{ $is_edit?($train->status ==2?'readonly':''):'' }} onkeyup="value=value.replace(/[^\d.]/g,'')" value="">元&nbsp;
                                 </div>
                             </div>
-                            <div class="form-group no_free w_100" style="display: none;">
+                            <div class="form-group no_free" style="display: none;">
                                 <label>收费单位</label>
-                                <select class="input-group dinfo" name="unit" id="unit">
+                                <select class="input-group" name="unit" id="unit">
                                     <option value="1" selected >人</option>
                                     <option value="2" >园所</option>
                                 </select>
@@ -203,11 +148,10 @@
                             </div>
                             <div class="form-group">
                                 <label>排序</label>
-                                <div class="input-group dinfo">
+                                <div class="input-group">
                                     <input type="number" class="input-sm" name="sort" id="sort" value="{{ $is_edit ? $train->sort:'0' }}">
                                 </div>
                             </div>
-                            <h3 class="title_info"><span style="color:red">*</span>报名信息填写设定</h3>
 							<div class="form-group">
                                 <label for="">身份证资料是否上传</label>
                                 <div class="radio">
@@ -253,70 +197,14 @@
                                 </div>
                             </div>
 							<div class="form-group">
-                                <label for="">是否发放证书</label>
-                                <div class="radio">
-                                    <label class="radio-inline">
-                                            <input type="radio" checked name="is_cert" value="0"> 否
-                                        </label>
-                                    <label class="radio-inline">
-                                            <input type="radio" name="is_cert" value="1">是
-                                        </label>
-                                </div>
-                            </div>
-							<div class="form-group">
-                                <label for="">是否填写身份证号</label>
-                                <div class="radio">
-                                    <label class="radio-inline">
-										<input type="radio" checked name="is_idcard" value="0"> 否
-									</label>
-                                    <label class="radio-inline">
-										<input type="radio" name="is_idcard" value="1">是
-									</label>
-                                </div>
-                            </div>
-							<div class="form-group">
-                                <label for="">是否填写学校</label>
-                                <div class="radio">
-                                    <label class="radio-inline">
-										<input type="radio" checked name="is_school" value="0"> 否
-									</label>
-                                    <label class="radio-inline">
-										<input type="radio" name="is_school" value="1">是
-									</label>
-                                </div>
-                            </div>
-							<div class="form-group">
-                                <label for="">是否填写学历</label>
-                                <div class="radio">
-                                    <label class="radio-inline">
-										<input type="radio" checked name="is_education" value="0"> 否
-									</label>
-                                    <label class="radio-inline">
-										<input type="radio" name="is_education" value="1">是
-									</label>
-                                </div>
-                            </div>
-							<div class="form-group">
-                                <label for="">是否填写专业</label>
-                                <div class="radio">
-                                    <label class="radio-inline">
-										<input type="radio" checked name="is_profession" value="0"> 否
-									</label>
-                                    <label class="radio-inline">
-										<input type="radio" name="is_profession" value="1">是
-									</label>
-                                </div>
-                            </div>
-                            <h3 class="title_info"><span style="color:red">*</span>培训声明及培训详情</h3>
-							<div class="form-group w_100">
-                                <label class="vtop w_7"><span style="color:red">*</span>声明</label>
-                                <div class="input-group dinfo">
+                                <label><span style="color:red">*</span>声明</label>
+                                <div class="input-group">
 									<textarea name="shengming" rows="3" cols="100" placeholder="声明" >{{ $is_edit ? $train->shengming:'' }}</textarea>
                                 </div>
                             </div>
-                            <div class="form-group w_100 @if($errors->has('editormd-html-code')) has-error @endif">
-                                <label class="vtop w_7"><span style="color:red">*</span>培训详情</label>
-                                <div id="editormd" class="dinfo">
+                            <div class="form-group @if($errors->has('editormd-html-code')) has-error @endif">
+                                <label><span style="color:red">*</span>培训详情</label>
+                                <div id="editormd">
                                     <textarea style="" id="article_content">{{ $is_edit ? $train->desc_md : '培训详情' }}</textarea>
                                 </div>
                                 @if($errors->has('editormd-html-code'))
@@ -351,17 +239,11 @@
     <script type="text/javascript">
         $(function () {
             $("input[name='charge_way'][value='{{ $is_edit ? $train->get_charge->charge_way:'1' }}']").attr('checked','true');
-            $("input[name='train_category'][value='{{ $is_edit ? $train->train_category:'0' }}']").attr('checked','true');
             $("input[name='is_free'][value='{{ $is_edit ? $train->is_free:'0' }}']").attr('checked','true');
 			$("input[name='is_card'][value='{{ $is_edit ? $train->get_charge->is_card:'0' }}']").attr('checked','true');
             $("input[name='is_health'][value='{{ $is_edit ? $train->get_charge->is_health:'0' }}']").attr('checked','true');
             $("input[name='is_labor'][value='{{ $is_edit ? $train->get_charge->is_labor:'0' }}']").attr('checked','true');
             $("input[name='is_learnership'][value='{{ $is_edit ? $train->get_charge->is_learnership:'0' }}']").attr('checked','true');
-            $("input[name='is_cert'][value='{{ $is_edit ? $train->get_charge->is_cert:'0' }}']").attr('checked','true');
-            $("input[name='is_idcard'][value='{{ $is_edit ? $train->get_charge->is_idcard:'0' }}']").attr('checked','true');
-            $("input[name='is_school'][value='{{ $is_edit ? $train->get_charge->is_school:'0' }}']").attr('checked','true');
-            $("input[name='is_education'][value='{{ $is_edit ? $train->get_charge->is_education:'0' }}']").attr('checked','true');
-            $("input[name='is_profession'][value='{{ $is_edit ? $train->get_charge->is_profession:'0' }}']").attr('checked','true');
             $("#unit").val({{ $is_edit ? $train->get_charge->unit:'1' }});
 
             change_free({{ $is_edit ? $train->is_free:'0' }})
