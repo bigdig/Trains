@@ -1,8 +1,13 @@
-function progressTips(tips) {
+function progressTips(tips,fn) {
   wx.showToast({
     title: tips,
     icon: 'none',
-    duration: 2000
+    duration: 2000,
+    success:function(){
+      if(fn){
+        fn();
+      }
+    }
   })
 }
 /**

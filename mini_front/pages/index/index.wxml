@@ -1,3 +1,6 @@
+<!-- <view class="no_trains" wx:if="{{!list.length}}">
+  暂无培训内容!
+</view> -->
 <view bindtap='goUpIndex' wx:for="{{list}}" wx:key="{{item.id}}" data-id="{{item.id}}" data-index="{{index}}">
   <view class="signList">
     <image class="img" src="{{item.banner}}"></image>
@@ -16,7 +19,7 @@
       </view>
     </view>
     <view wx:if="{{item.is_free==0}}" class="one currentOne">
-      <text class="group_b">免费</text>
+      <text class="group_b">免费</text> 
     </view>
     <view wx:if="{{item.is_free!=0&&item.get_charge.charge_way==1}}" wx:for="{{item.getPrices}}" wx:for-item="items" class="model_list">
       <view class="list_price flex">
@@ -40,9 +43,19 @@
       </view>
     </view>
 
-    <view class="activityTitle {{item.status==2?'':'over'}}">{{item.status==0?"已结束":item.status==1?"待开始":"活动中"}}</view>
+    <view class="activityTitle {{item.state=='报名中'?'':'over'}}">{{item.state=='培训中'?'报名已结束':item.state}}</view>
     <view class="active_people_num_type" >
       <text decode="{{true}}">已经报名:&nbsp;&nbsp;{{item.sale_num+item.jia_sale_num}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;剩余人数:&nbsp;&nbsp;{{item.pre_num}}</text>
     </view>
   </view>
+</view>
+<view class="more_trains" bindtap='getMoreTrain' wx:if="{{hasMoreTrain}}">
+  正在加载
+</view>
+ <view class="weui-loadmore weui-loadmore_line" hidden='{{hasmoreData}}'>
+    <view class="weui-loadmore__tips weui-loadmore__tips_in-line">暂无更多数据</view>
+</view>
+<view class="weui-loadmore" hidden='{{hiddenloading}}'>
+    <view class="weui-loading"></view>
+    <view class="weui-loadmore__tips">正在加载</view>
 </view>

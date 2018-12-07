@@ -15,8 +15,7 @@ Page({
         name: '亲子园',
         value: 'Q',
         checked: true
-      },
-      {
+    },{
         name: '幼儿园',
         value: 'Y',
         checked: false
@@ -33,7 +32,9 @@ Page({
     unit_num: '',
     init_one_price:0,
     one_prices: 0,
-    isAjax: false
+    isAjax: false,
+    round:Math.random(),
+    sumMoney:0.00
   },
   radioChange: function(e) {
     let checked = e.detail.value
@@ -63,6 +64,9 @@ Page({
     let onStudentList = this.data.studentList;
     wx.request({
       url: `${config.apply_students_del}/${id}`,
+      data:{
+        client:1
+      },
       method: 'GET',
       success: function(res) {
         let datas = res.data;
@@ -71,6 +75,7 @@ Page({
           _that.setData({
             studentList: onStudentList
           });
+          _that.getSchForNo();
         } else {
           common.progressTips(datas.msg);
         }
@@ -80,6 +85,24 @@ Page({
       }
     })
 
+  },
+
+  toDecimal2(x) {
+      var f = parseFloat(x);
+      if(isNaN(f)) {
+    return false;
+  }
+  var f = Math.round(x * 100) / 100;
+  var s = f.toString();
+  var rs = s.indexOf('.');
+  if (rs < 0) {
+    rs = s.length;
+    s += '.';
+  }
+  while (s.length <= rs + 2) {
+    s += '0';
+  }
+  return s;
   },
   //获取输入的合同号
   getNo(e) {
@@ -95,122 +118,138 @@ Page({
   getSchForNo(again) {
     let _that = this;
     if (_that.data.contract_no && !_that.data.contract_no.startsWith(_that.data.QY)) {
-      wx.request({
-        url: config.check_contract,
-        method: 'POST',
-        data: {
-          contract_no: _that.data.QY + _that.data.contract_no,
-          train_id: _that.data.train_id,
-          apply_user: wx.getStorageSync('user_save_infos').userid
-        },
-        success: function(res) {
-          let datas = res.data;
-          if (datas.code == "200") {
-            let courDD = _that.data.course_one_detail;
-            //付费方式
-            if (courDD.is_free && again!="again") {
-              //购买单位园所
-              if (courDD.get_charge.unit != 1) {
-                _that.setData({
-                  one_prices: _that.data.pay_type_list[0].attr_price
-                })
-                if (_that.data.init_one_price==0){
-                  _that.setData({
-                    init_one_price: _that.data.one_prices
-                  })
-                }
-              }
-              //购买单位人
-              //只含一种售价
-              if (_that.data.pay_type_list.length == 1) {
-                _that.setData({
-                  one_prices: _that.data.pay_type_list[0].attr_price
-                })
-                if (_that.data.init_one_price == 0) {
-                  _that.setData({
-                    init_one_price: _that.data.one_prices
-                  })
-                }
-              }
-              //含多中售价且为销售1方式
-              if (_that.data.pay_type_list.length > 1 && courDD.get_charge.charge_way == 1) {
-                //团单方式
-                if (datas.data.apply_students.length >= courDD.get_charge.min_num) {
-                  //团购价
-                  _that.setData({
-                    one_prices: _that.data.pay_type_list[0].attr_price
-                  })
-                  if (_that.data.init_one_price == 0) {
+      wx.showLoading({
+        title: '查询中',
+        mask: true,
+        success: function () {
+          wx.request({
+            url: config.check_contract,
+            method: 'POST',
+            data: {
+              contract_no: _that.data.QY + _that.data.contract_no,
+              train_id: _that.data.train_id,
+              apply_user: wx.getStorageSync('user_save_infos').userid,
+              client:1
+            },
+            success: function (res) {
+              let datas = res.data;
+              if (datas.code == "200") {
+                let courDD = _that.data.course_one_detail;
+                //付费方式
+                if (courDD.is_free && again != "again") {
+                  //购买单位园所
+                  if (courDD.get_charge.unit != 1) {
                     _that.setData({
-                      init_one_price: _that.data.one_prices
+                      one_prices: _that.data.pay_type_list[_this.data.checkedOneId].attr_price
                     })
+                    if (_that.data.init_one_price == 0) {
+                      _that.setData({
+                        init_one_price: _that.data.one_prices
+                      })
+                    }
                   }
-                } else {
-                  //最高价
-                  _that.setData({
-                    one_prices: _that.data.pay_type_list[_that.data.pay_type_list.length - 1].attr_price
-                  })
-                  if (_that.data.init_one_price == 0) {
+                  //购买单位人
+                  //只含一种售价
+                  if (_that.data.pay_type_list.length == 1) {
                     _that.setData({
-                      init_one_price: _that.data.one_prices
+                      one_prices: _that.data.pay_type_list[_that.data.checkedOneId].attr_price
                     })
+                    if (_that.data.init_one_price == 0) {
+                      _that.setData({
+                        init_one_price: _that.data.one_prices
+                      })
+                    }
                   }
-                }
-              }
-              //含多中售价且为销售2方式
-              if (_that.data.pay_type_list.length > 1 && courDD.get_charge.charge_way == 2) {
-                //最优价
-                _that.setData({
-                  one_prices: _that.data.pay_type_list[0].attr_price
-                })
-                if (_that.data.init_one_price == 0) {
-                  _that.setData({
-                    init_one_price: _that.data.one_prices
-                  })
-                }
-              }
+                  //含多中售价且为销售1方式
+                  if (_that.data.pay_type_list.length > 1 && courDD.get_charge.charge_way == 1) {
+                    //团单方式
+                    if (datas.data.apply_students.length >= courDD.get_charge.min_num) {
+                      //团购价
+                      _that.setData({
+                        one_prices: _that.data.pay_type_list[_that.data.checkedOneId].attr_price
+                      })
+                      if (_that.data.init_one_price == 0) {
+                        _that.setData({
+                          init_one_price: _that.data.one_prices
+                        })
+                      }
+                    } else {
+                      //最高价
+                      _that.setData({
+                        one_prices: _that.data.pay_type_list[_that.data.pay_type_list.length - 1].attr_price
+                      })
+                      if (_that.data.init_one_price == 0) {
+                        _that.setData({
+                          init_one_price: _that.data.one_prices
+                        })
+                      }
+                    }
+                  }
+                  //含多中售价且为销售2方式
+                  if (_that.data.pay_type_list.length > 1 && courDD.get_charge.charge_way == 2) {
+                    //最优价
+                    _that.setData({
+                      one_prices: _that.data.pay_type_list[_that.data.checkedOneId].attr_price
+                    })
+                    if (_that.data.init_one_price == 0) {
+                      _that.setData({
+                        init_one_price: _that.data.one_prices
+                      })
+                    }
+                  }
 
-              //含多中售价且为销售3方式
-              if (_that.data.pay_type_list.length > 1 && courDD.get_charge.charge_way == 3) {
-                //默认最低价
-                _that.setData({
-                  one_prices: _that.data.pay_type_list[0].attr_price
-                })
-                if (_that.data.init_one_price == 0) {
-                  _that.setData({
-                    init_one_price: _that.data.one_prices
-                  })
+                  //含多中售价且为销售3方式
+                  if (_that.data.pay_type_list.length > 1 && courDD.get_charge.charge_way == 3) {
+                    //默认最低价
+                    _that.setData({
+                      one_prices: _that.data.pay_type_list[_that.data.checkedOneId].attr_price
+                    })
+                    if (_that.data.init_one_price == 0) {
+                      _that.setData({
+                        init_one_price: _that.data.one_prices
+                      })
+                    }
+                  }
                 }
+                _that.setData({
+                  studentList: datas.data.apply_students,
+                  schName: datas.data.contract.schName,
+                  student_count: datas.data.student_count,
+                  type_unit: courDD.get_charge.unit,
+                  unit_num: courDD.get_charge.max_nursery_num
+                });
+
+              } else {
+                _that.setData({
+                  schName: '',
+                  studentList: [],
+                  student_count: ''
+                });
+                common.progressTips(datas.msg);
               }
+              let sum = _that.toDecimal2(_that.data.course_one_detail.get_charge.unit == 1 ? _that.data.one_prices * _that.data.studentList.length : _that.data.one_prices)
+              _that.setData({ sumMoney: sum})
+              setTimeout(function () {
+                wx.hideLoading();
+              }, 1000)
+            },
+            fail: function () {
+              _that.setData({
+                QY: _that.data.radioItems[i].value,
+                studentList: [],
+                contract_no: '',
+                schName: '',
+                isAjax: false,
+                checkedOneId: 0,
+                one_prices: _that.data.init_one_price
+              })
+              common.progressTips("出错了");
+              setTimeout(function () {
+                wx.hideLoading();
+              }, 1000)
             }
-            _that.setData({
-              studentList: datas.data.apply_students,
-              schName: datas.data.contract.schName,
-              student_count: datas.data.student_count,
-              type_unit: courDD.get_charge.unit,
-              unit_num: courDD.get_charge.max_nursery_num
-            });
-            
-          } else {
-            _that.setData({
-              schName: '',
-              studentList: [],
-              student_count: ''
-            });
-            common.progressTips(datas.msg);
-          }
-        },
-        fail: function() {
-          _that.setData({
-            QY: _that.data.radioItems[i].value,
-            studentList: [],
-            contract_no: '',
-            schName: '',
-            isAjax: false,
-            checkedOneId: 0,
-            one_prices: _that.data.init_one_price
-          })
-          common.progressTips("出错了");
+          });
+
         }
       })
     } else {
@@ -219,10 +258,14 @@ Page({
   },
   che_reaone(e) {
     let itid = e.currentTarget.dataset.itid;
-    let prices = e.currentTarget.dataset.price
+    let prices = e.currentTarget.dataset.price;
     this.setData({
       checkedOneId: itid,
       one_prices: prices
+    })
+    let sum = this.toDecimal2(this.data.course_one_detail.get_charge.unit == 1 ? this.data.one_prices * this.data.studentList.length : this.data.one_prices);
+    this.setData({
+      sumMoney: sum
     })
   },
   // 指定排序的比较函数
@@ -239,7 +282,8 @@ Page({
       url: config.go_pay,
       method: "post",
       data: {
-        order_id: order_id
+        order_id: order_id,
+        client:1
       },
       header: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -255,6 +299,15 @@ Page({
           paySign: order.paySign,
           success: function (res) {
             common.progressTips('支付成功！');
+            wx.request({
+              url: config.send_template,
+              method:"get",
+              data:{
+                order_id: order_id,
+                prepay_id:order.prepay_id,
+                client:1
+              }
+            })
           },
           fail: function (res) {
             common.progressTips('支付失败！');
@@ -262,7 +315,7 @@ Page({
           complete: function (res) {
             setTimeout(function () {
               wx.navigateTo({
-                url: `/pages/my/allInfo/index?order_id=${order_id}&train_id=${train_id}&contract_no=${that.data.QY + that.data.contract_no}`,
+                url: `/pages/mine/my/allInfo/index?order_id=${order_id}&train_id=${train_id}&contract_no=${that.data.QY + that.data.contract_no}`,
               })
             }, 2000);
           }
@@ -299,7 +352,8 @@ Page({
         contract_no: _that.data.QY + _that.data.contract_no,
         train_id: _that.data.train_id,
         price: _that.data.one_prices,
-        park_name: _that.data.schName
+        park_name: _that.data.schName,
+        client:1
       },
       success: function(res) {
         let datas = res.data;
@@ -310,7 +364,7 @@ Page({
             common.progressTips("提交成功！");
             setTimeout(function() {
               wx.navigateTo({
-                url: `/pages/my/allInfo/index?order_id=${order_id}&train_id=${_that.data.train_id}&contract_no=${_that.data.QY + _that.data.contract_no}`,
+                url: `/pages/mine/my/allInfo/index?order_id=${order_id}&train_id=${_that.data.train_id}&contract_no=${_that.data.QY + _that.data.contract_no}`,
               })
             }, 2000)
           } else {
@@ -363,9 +417,17 @@ Page({
         type_unit: setLocalData.type_unit,
         unit_num: setLocalData.unit_num,
         radioItems: setLocalData.radioItems,
-        init_one_price: setLocalData.init_one_price,
-        one_prices: setLocalData.one_prices,
+        init_one_price: setLocalData.init_one_price
       });
+      if (setLocalData.one_prices){
+        this.setData({
+          one_prices: setLocalData.one_prices
+        })
+      }
+
+      let sum = this.toDecimal2(this.data.course_one_detail.get_charge.unit == 1 ? this.data.one_prices * this.data.studentList.length : this.data.one_prices)
+      this.setData({ sumMoney: sum })
+
       if (setLocalData.contract_no){
         this.getSchForNo('again');
       }
@@ -375,14 +437,83 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function() {
-
+    console.log("学员报名加载")
+    const thatOne = wx.getStorageSync('course_one_detail');
+    if (thatOne.getPrices){
+      this.setData({
+        pay_type_list: thatOne.getPrices
+      });
+    }
+    this.setData({
+      course_one_detail: thatOne
+    });
+    let setLocalData = wx.getStorageSync('init_out_data');
+    if (setLocalData && setLocalData.train_id) {
+      this.setData({
+        schName: setLocalData.schName,
+        contract_no: setLocalData.contract_no,
+        QY: setLocalData.QY,
+        checkedOneId: setLocalData.checkedOneId,
+        add_edit_url: setLocalData.add_edit_url,
+        student_count: setLocalData.student_count,
+        type_unit: setLocalData.type_unit,
+        unit_num: setLocalData.unit_num,
+        radioItems: setLocalData.radioItems,
+        init_one_price: setLocalData.init_one_price
+      });
+      if (setLocalData.one_prices) {
+        this.setData({
+          one_prices: setLocalData.one_prices
+        })
+      }
+      let sum = this.toDecimal2(this.data.course_one_detail.get_charge.unit == 1 ? this.data.one_prices * this.data.studentList.length : this.data.one_prices)
+      this.setData({ sumMoney: sum })
+      if (setLocalData.contract_no){
+        this.getSchForNo();
+      }
+    }
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function() {
-
+    this.setData({"round":Math.random()});
+    console.log("学员报名加载222")
+    const thatOne = wx.getStorageSync('course_one_detail');
+    if (thatOne.getPrices) {
+      this.setData({
+        pay_type_list: thatOne.getPrices
+      });
+    }
+    this.setData({
+      course_one_detail: thatOne
+    });
+    let setLocalData = wx.getStorageSync('init_out_data');
+    if (setLocalData.train_id) {
+      this.setData({
+        schName: setLocalData.schName,
+        contract_no: setLocalData.contract_no,
+        QY: setLocalData.QY,
+        checkedOneId: setLocalData.checkedOneId,
+        add_edit_url: setLocalData.add_edit_url,
+        student_count: setLocalData.student_count,
+        type_unit: setLocalData.type_unit,
+        unit_num: setLocalData.unit_num,
+        radioItems: setLocalData.radioItems,
+        init_one_price: setLocalData.init_one_price
+      });
+      if (setLocalData.one_prices) {
+        this.setData({
+          one_prices: setLocalData.one_prices
+        })
+      }
+      let sum = this.toDecimal2(this.data.course_one_detail.get_charge.unit == 1 ? this.data.one_prices * this.data.studentList.length : this.data.one_prices)
+      this.setData({ sumMoney: sum })
+      if (setLocalData.contract_no) {
+        this.getSchForNo();
+      }
+    }
   },
 
   /**

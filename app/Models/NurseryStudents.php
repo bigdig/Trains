@@ -23,6 +23,7 @@ class NurseryStudents extends Model implements Transformable
      */
     protected $fillable = [
         'contract_no','apply_user','student_name','student_sex','student_phone','student_position',
+		'school','education','profession','student_type',
         'idcard','card_z','card_f','health_1','health_2','health_3','labor_1','labor_2','learnership'
     ];
 }

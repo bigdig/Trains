@@ -22,7 +22,7 @@ class Students extends Model implements Transformable
      */
     protected $table='t_order_students';
     protected $fillable = [
-        'order_id','student_id','fee','is_paid','status','sign_time'
+        'order_id','student_id','fee','is_paid','status','sign_time','cert_time'
     ];
 
     public function get_order(){

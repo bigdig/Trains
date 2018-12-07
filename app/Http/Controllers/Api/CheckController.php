@@ -119,7 +119,7 @@ class CheckController extends Controller
         $phone = $request->get('apply_phone','');
         $code  = $request->get('code','');
         $openId= $request->get('open_id','');
-		Log::error('check_code openId:'.$openId.' apply_phone :'.$phone);
+		Log::error('check_code openId:'.$openId.' apply_phone :'.$phone.' code :'.$code);
         $info = PhoneCode::where('status','0')
             ->where('phone',$phone)
             ->orderBy('send_time','desc')

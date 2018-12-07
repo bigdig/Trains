@@ -8,18 +8,29 @@ use App\Http\Controllers\Controller;
 use App\Models\Students;
 use App\Models\Entry;
 use App\Models\Trains;
+use App\Models\TrainCert;
 use App\Repositories\Eloquent\StudentsRepositoryEloquent;
 use Auth;
-
+use App\Services\ImageUpload;
+use App\Services\UmsApi;
+use App\Repositories\Eloquent\ImageRepositoryEloquent;
+use Log;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Config;
 
 class StudentsController extends Controller
 {
+    protected $imageUpload;
+    protected $umsApi;
     protected $studentsRepositoryEloquent;
+    protected $imageRepositoryEloquent;
 
-    public function __construct(StudentsRepositoryEloquent $studentsRepositoryEloquent)
+    public function __construct(StudentsRepositoryEloquent $studentsRepositoryEloquent,ImageUpload $imageUpload,ImageRepositoryEloquent $imageRepositoryEloquent,UmsApi $umsApi)
     {
+        $this->imageUpload = $imageUpload;
+		$this->umsApi = $umsApi;
+        $this->imageRepositoryEloquent = $imageRepositoryEloquent;
         $this->studentsRepositoryEloquent = $studentsRepositoryEloquent;
     }
 
@@ -31,7 +42,18 @@ class StudentsController extends Controller
     public function index(Request $request)
     {
         //
-        $trains = Trains::where('status',2)->get();
+		if(Auth::user()->hasRole('admin')){
+			$request->client = 0;
+		}elseif(Auth::user()->hasRole('qnursery')){
+			$request->client = Config::get('category.qnursery');
+		}elseif(Auth::user()->hasRole('ynursery')){
+			$request->client = Config::get('category.ynursery');
+		}
+		if(!$request->client){
+			$trains = Trains::where('status',2)->get();			
+		}else{
+			$trains = Trains::where('status',2)->where('train_category',$request->client)->get();	
+		}
         $lists = Students::where(function($query) use($request){
             if($request->has('status')){
                 $query->where('status',$request->get('status'));
@@ -47,6 +69,9 @@ class StudentsController extends Controller
                 if($request->has('order_id')){
                     $query->where('id',$request->get('order_id'));
                 }
+				if($request->client){
+					$query->where('order_source',$request->client );
+				}
             })
             ->whereHas('get_nursery_user',function ($query) use ($request){
                 if($request->has('student_phone')){
@@ -54,7 +79,11 @@ class StudentsController extends Controller
                 }
             })
             ->with(['get_order'=>function($query){
-                $query->with('get_train');
+                $query->with([
+					'get_train'=>function($query){
+						$query->with('get_charge');
+					}
+				]);
             },'get_nursery_user'])
             ->where('is_paid','1')
             ->orderBy('created_at','desc')
@@ -119,16 +148,116 @@ class StudentsController extends Controller
                 ->first();
             if($order_students_info){
                 $order =Entry::where('id',$order_students_info->order_id)
-                    ->where('status',0)
+                    ->where('status','>=',4)
+                    ->first();
+                if($order->is_paid !=1){
+                    return ['code'=>0,'msg'=>'未支付'];
+                }
+				if($order->status ==4){
+                    return ['code'=>0,'msg'=>'审核未通过'];
+                }
+                $order_students_info->status=3;
+                $order_students_info->sign_time=date("Y-m-d H:i:s");
+                $order_students_info->save();
+                return ['code'=>200,'msg'=>'签到成功!'];
+            }
+            return ['code'=>0,'msg'=>'数据异常'];
+        }
+        return ['code'=>0,'msg'=>'数据异常'];
+    }
+	/**
+     * 设置完成页面
+     */
+    public function go_done($order_students_id){
+        $order_students_info = Students::where('id',$order_students_id)
+            ->with('get_nursery_user')
+            ->where('status',3)
+            ->where('is_paid',1)
+            ->first();
+        if($order_students_info){
+            $order_info =Entry::where('id',$order_students_info->order_id)
+                ->with('get_train')
+                ->where('status','>=',6)
+                ->where('is_paid',1)
+                ->first();
+            return view('admin/students/go_done',['students_info'=>$order_students_info,'order_info'=>$order_info]);
+        }
+    }
+	/**
+     * 设置完成
+	 * 发放证书
+     */
+    public function done(Request $request){
+        $data = $request->toArray();
+        if ($request->hasFile('cert_picture')) {
+            $upload_status = $this->imageUpload->uploadImage($request->file('cert_picture'));
+            $file_arr = $upload_status['filename'];
+            // 保存到图片表
+            $insert_id = $this->saveImageInfo($file_arr);
+            $data['cert_picture'] = env('APP_URL','').'/'.$file_arr['small'];
+        }else{
+            $data['cert_picture'] = '';
+		}
+        if( TrainCert::create( $data ) ){
+            $order_students_info = Students::where('id',$request->get('order_student_id') )
+                ->where('status',3)
+                ->where('is_paid',1)
+                ->first();
+            $order_students_info->status=4;
+            $order_students_info->cert_time=date("Y-m-d");
+            $order_students_info->save();
+
+            Entry::where('id',$order_students_info->order_id)->update(['status'=>7]);
+			/*
+			$order_info = Entry::with('get_train')->find($order_students_info->order_id);
+            //ums推送
+            $this->umsApi->postTrain([
+                'contractNum'=>$order_info->contract_no,
+                'paramJson' =>[
+                    'firstTrainBeginTime'=>$order_info->get_train->train_start,
+                    'firstTrainEndTime'=>$order_info->get_train->train_end,
+                    'firstCheckInTime'=>$order_students_info->sign_time,
+                    'firstCertificateIssuingTime'=>date("Y-m-d H:i:s")
+                ]
+            ]);
+			*/
+            return redirect()->route('students.index',['order_id'=>$order_students_info->order_id]);
+        }
+    }
+	public function test(Request $request){
+		$result = $this->umsApi->postTrain([
+                'contractNum'=>'Y0435',
+                'paramJson' =>[
+                    'firstTrainBeginTime'=>'2018-11-01 00:00:00',
+                    'firstTrainEndTime'=>'2018-11-02 00:00:00',
+                    'firstCheckInTime'=>'2018-11-01 00:00:00',
+                    'firstCertificateIssuingTime'=>date("Y-m-d H:i:s")
+                ]
+            ]);
+			return $result;
+	}
+    //设置完成
+	public function over_done(Request $request){
+        $id = $request->get('order_students_id','');
+        if($id){
+            $order_students_info = Students::where('id',$id)
+                ->where('status',3)
+                ->where('is_paid',1)
+                ->first();
+            if($order_students_info){
+                $order =Entry::where('id',$order_students_info->order_id)
+                    ->where('status',6)
                     ->first();
                 if($order->is_paid !=1){
                     return ['code'=>0,'msg'=>'未支付'];
                 }
 
-                $order_students_info->status=3;
-                $order_students_info->sign_time=date("Y-m-d H:i:s");
+                $order_students_info->status=4;
                 $order_students_info->save();
-                return ['code'=>200,'msg'=>'签到成功!'];
+
+                $order->status =7;
+                $order->save();
+                return ['code'=>200,'msg'=>'设置成功!'];
             }
             return ['code'=>0,'msg'=>'数据异常'];
         }
@@ -185,10 +314,33 @@ class StudentsController extends Controller
             ]);
         }
     }
+	/**
+	* 证书预览
+	*/
+	public function cert(Request $request){
+		$train_id = $request->input('train_id','');
+        $student_id = $request->input('student_id','');
+        $order_id = $request->input('order_id','');
+        if($train_id && $student_id){
+			$info = TrainCert::where('student_id',$student_id)
+            ->where('train_id',$train_id)
+            ->where('order_id',$order_id)
+            ->first();
+			return response()->json(['code'=>200,'msg'=>'ok','data'=>$info]);
+		}
+	}
+	
     /**
      * 学员导出
      */
     public function export_data(Request $request){
+		if(Auth::user()->hasRole('admin')){
+			$request->client = 0;
+		}elseif(Auth::user()->hasRole('qnursery')){
+			$request->client = Config::get('category.qnursery');
+		}elseif(Auth::user()->hasRole('ynursery')){
+			$request->client = Config::get('category.ynursery');
+		}
         $lists = Students::where(function($query) use($request){
             if($request->input('status') !==null ){
                 $query->where('status',$request->get('status'));
@@ -201,9 +353,12 @@ class StudentsController extends Controller
                 if($request->input('park_name')){
                     $query->where('park_name',$request->get('park_name'));
                 }
-                if($request->input('train_id')){
+				if($request->input('train_id')){
                     $query->where('train_id',$request->get('train_id'));
                 }
+				if($request->client){
+					$query->where('order_source',$request->client);
+				}
             })
             ->whereHas('get_nursery_user',function ($query) use ($request){
                 if($request->input('student_phone')){
@@ -218,7 +373,7 @@ class StudentsController extends Controller
             ->get();
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
-        $worksheet->setTitle('学员表');
+        $worksheet->setTitle('培训报名表');
 
         $worksheet->setCellValueByColumnAndRow(1, 1, '园所合同号');
         $worksheet->setCellValueByColumnAndRow(2, 1, '园所名称');
@@ -227,8 +382,13 @@ class StudentsController extends Controller
         $worksheet->setCellValueByColumnAndRow(5, 1, '学员性别');
         $worksheet->setCellValueByColumnAndRow(6, 1, '学员手机号');
         $worksheet->setCellValueByColumnAndRow(7, 1, '学员岗位');
-        $worksheet->setCellValueByColumnAndRow(8, 1, '签到日期');
-        $worksheet->setCellValueByColumnAndRow(9, 1, '培训状态');
+        $worksheet->setCellValueByColumnAndRow(8, 1, '身份证');
+        $worksheet->setCellValueByColumnAndRow(9, 1, '学历');
+        $worksheet->setCellValueByColumnAndRow(10, 1, '毕业院校');
+        $worksheet->setCellValueByColumnAndRow(11, 1, '专业');
+		
+        $worksheet->setCellValueByColumnAndRow(12, 1, '签到日期');
+        $worksheet->setCellValueByColumnAndRow(13, 1, '培训状态');
 
         for($i=0;$i<count($lists);$i++){
             $j =$i+2;
@@ -239,10 +399,14 @@ class StudentsController extends Controller
             $worksheet->setCellValueByColumnAndRow(5,$j,$lists[$i]->get_nursery_user->student_sex==1?'男':'女');
             $worksheet->setCellValueByColumnAndRow(6,$j,$lists[$i]->get_nursery_user->student_phone);
             $worksheet->setCellValueByColumnAndRow(7,$j,$lists[$i]->get_nursery_user->student_position);
-            $worksheet->setCellValueByColumnAndRow(8,$j,$lists[$i]->sign_time);
-            $worksheet->setCellValueByColumnAndRow(9,$j,$this->text_status($lists[$i]->status) );
+            $worksheet->setCellValueByColumnAndRow(8,$j,"'".$lists[$i]->get_nursery_user->idcard);
+            $worksheet->setCellValueByColumnAndRow(9,$j,$lists[$i]->get_nursery_user->education);
+            $worksheet->setCellValueByColumnAndRow(10,$j,$lists[$i]->get_nursery_user->school);
+            $worksheet->setCellValueByColumnAndRow(11,$j,$lists[$i]->get_nursery_user->profession);
+            $worksheet->setCellValueByColumnAndRow(12,$j,$lists[$i]->sign_time);
+            $worksheet->setCellValueByColumnAndRow(13,$j,$this->text_status($lists[$i]->status) );
         }
-        $filename = '培训报名表.xlsx';
+        $filename = '培训学员表.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$filename.'"');
         header('Cache-Control: max-age=0');
@@ -337,5 +501,15 @@ class StudentsController extends Controller
     public function destroy($id)
     {
         //
+    }
+	/**
+     * 保存图片信息到数据库
+     * @param $file_arr array
+     * @return string 插入ID
+     * */
+    protected function saveImageInfo($file_arr)
+    {
+        $insert_id = $this->imageRepositoryEloquent->saveImage($file_arr, Auth::user());
+        return $insert_id;
     }
 }

@@ -1,4 +1,8 @@
 /* pages/index/signUP/signUpList/addInfo/index.wxss */
+page{
+  height: 100%;
+}
+
 .boxHeight {
   height: 64rpx;
 }
@@ -28,7 +32,11 @@
 
 .chooses {
   float: left;
-  width: 65%;
+}
+
+.edu_name {
+  border:1px solid #ccc;
+  width: 100%;
 }
 
 .girlBox {
@@ -44,13 +52,17 @@
   width: 200rpx;
   height: 64rpx;
   line-height: 64rpx;
+  margin-left: 10px;
 }
 
 .education_name {
   position: absolute;
-  width: 90%;
+  width: 100%;
+  background-size: 100%;
 }
-
+.csEdu{
+  top: -3rpx;
+}
 .education_select {
   position: absolute;
   padding-left: 20rpx;
@@ -58,6 +70,9 @@
   top: 68rpx;
   background: #fff;
   border: 1px solid #ccc;
+  z-index: 101;
+  max-height: 310rpx;
+  overflow-y: auto;
 }
 
 .major {
@@ -69,20 +84,49 @@
 }
 
 .imageTitle {
-  width: 150rpx;
+  width: 100%;
+}
+
+.cardCount {
+  width: 10%;
+  height: 68rpx;
+  line-height: 68rpx;
+}
+
+.sele_img {
+  width: 13rpx;
+  height: 30rpx;
+  position: absolute;
+  right: 15rpx;
+  top: 20rpx;
+  z-index: 99;
 }
 
 .u-p-m {
+  position: relative;
   text-align: center;
   font-size: 28rpx;
   margin-right: 15rpx;
   min-width: 168rpx;
 }
 
+.del_img {
+  position: absolute;
+  width: 30rpx;
+  height: 30rp;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 29rpx;
+  color: #fff;
+  background: #ccc;
+  top: -10rpx;
+  right: -10rpx;
+}
+
 .uploadBg {
   display: block;
-  width: 80rpx;
-  height: 80rpx;
+  width: 150rpx;
+  height: 150rpx;
   margin: 0 auto;
   margin-bottom: 5rpx;
 }
@@ -104,14 +148,42 @@
 }
 
 .submitButton {
-  width: 540rpx;
+  width: 100%;
   height: 90rpx;
   line-height: 90rpx;
   text-align: center;
   color: #fff;
-  border-radius: 64rpx;
-  background: #ff4a7e;
-  margin: 0 auto;
-  margin-top: 110rpx;
+  background: #09bb07;
+  position: fixed;
+  bottom: 0;
+  left: 0;
   font-size: 30rpx;
+}
+
+:-moz-placeholder {
+  color: #eee;
+}
+
+:-ms-input-placeholder {
+  color: #eee;
+}
+
+::-moz-placeholder {
+  color: #eee;
+}
+
+.parkBox {
+  border-bottom: 1px solid #ccc;
+}
+
+.parkBox input {
+  border:none;
+}
+
+.card {
+  margin: 20rpx 0;
+}
+
+.cardStyle {
+  margin: 0 110rpx;
 }

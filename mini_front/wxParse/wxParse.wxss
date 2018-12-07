@@ -12,6 +12,7 @@ view{
     display: inline;
     margin: 0;
     padding: 0;
+    font-size:30rpx;
 }
 /*//标题 */
 .wxParse-div{margin: 0;padding: 0;}
@@ -57,7 +58,10 @@ view{
 
 .wxParse-i,.wxParse-cite,.wxParse-em,.wxParse-var,.wxParse-address{font-style:italic}
 .wxParse-pre,.wxParse-tt,.wxParse-code,.wxParse-kbd,.wxParse-samp{font-family:monospace}
-.wxParse-pre{white-space:pre}
+.wxParse-pre{
+  /* white-space:pre */
+  text-indent: 60rpx;
+  }
 .wxParse-big{font-size:1.17em}
 .wxParse-small,.wxParse-sub,.wxParse-sup{font-size:.83em}
 .wxParse-sub{vertical-align:sub}

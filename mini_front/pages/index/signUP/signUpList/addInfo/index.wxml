@@ -16,7 +16,7 @@
         <input name="student_phone" type="number" maxlength="11" class="border testNum boxHeight" value='{{user_id_detail.student_phone}}' placeholder="请输入手机号" />
       </view>
     </view>
-    <view class="parkBox">
+    <view class="parkBox" wx:if="{{train_set.is_idcard}}">
       <view class="lineblock parkTitle-left addUserTitle">
         <text class="textContract">学员身份证号：</text>
       </view>
@@ -30,11 +30,11 @@
       </view>
       <view class="lineblock parkTitle-right sexBox">
         <input class="hide" name="student_sex" value="{{_sex}}" />
-        <view class="lineblock boy boyBox left">
-          <text class="lineblock {{_sex=='1'?'checkedBg':'checkBg'}}" data-sex="1" bindtap='chooseSex'></text>
+        <view class="lineblock boy boyBox left" data-sex="1" bindtap='chooseSex'>
+          <text class="lineblock {{_sex=='1'?'checkedBg':'checkBg'}}" ></text>
         </view>
-        <view class="lineblock girl girlBox left">
-          <text class="lineblock {{_sex=='2'?'checkedBg':'checkBg'}}" data-sex="2" bindtap='chooseSex'></text>
+        <view class="lineblock girl girlBox left" data-sex="2" bindtap='chooseSex'>
+          <text class="lineblock {{_sex=='2'?'checkedBg':'checkBg'}}" ></text>
         </view>
       </view>
     </view>
@@ -42,11 +42,20 @@
       <view class="lineblock parkTitle-left addUserTitle">
         <text class="textContract">学员岗位：</text>
       </view>
-      <view class="lineblock parkTitle-right">
+      <view class="lineblock education csEdu">
+          <view class="education_name edu_name" data-pro="choose" bindtap='selectProfess'>
+            <input disabled='disabled' name="student_position" class="border testNum boxHeight" value='{{meProfess}}' />
+            <image class="sele_img" src='/image/select.png'></image>
+          </view>
+          <view class="education_select" wx:if="{{selectProfess}}">
+            <view class="select_one" bindtap="selectProfess" wx:for="{{meProfessList}}" wx:key="{{item.id}}"  data-pro="{{item.professional}}">{{item.professional}}</view>
+          </view>
+        </view>
+      <!-- <view class="lineblock parkTitle-right">
         <input name="student_position" maxlength="5" value='{{user_id_detail.student_position}}' class="border testNum boxHeight" placeholder="请输入岗位名称" />
-      </view>
+      </view> -->
     </view>
-    <view class="parkBox">
+    <view class="parkBox" wx:if="{{train_set.is_school}}">
       <view class="lineblock parkTitle-left addUserTitle">
         <text class="textContract">毕业院校：</text>
       </view>
@@ -54,14 +63,15 @@
         <input name="school" maxlength="10" value='{{user_id_detail.school}}' class="border testNum boxHeight" placeholder="请输入毕业院校" />
       </view>
     </view>
-    <view class="parkBox clear">
-      <view class="lineblock parkTitle-left addUserTitle">
-        <text class="textContract">学历：</text>
-      </view>
-      <view class="chooses left">
-        <view class="lineblock education left">
-          <view class="education_name" data-me="choose" bindtap='selectEducation'>
+    <view class="clear" wx:if="{{train_set.is_education}}">
+      <view class="lineblock parkTitle-left addUserTitle parkBox" style='width:100%; padding-bottom:10rpx; margin:0 0 10rpx 0;'>
+        <view class='left parkTitle-left'>
+          <text class="textContract">学历：</text>
+        </view>
+        <view class="lineblock education">
+          <view class="education_name edu_name" data-me="choose" bindtap='selectEducation'>
             <input disabled='disabled' name="education" class="border testNum boxHeight" value='{{meEducation}}' />
+            <image class="sele_img" src='/image/select.png'></image>
           </view>
           <view class="education_select" wx:if="{{selectEducation}}">
             <view class="select_one" bindtap="selectEducation" data-me="中专及以下">中专及以下</view>
@@ -69,76 +79,91 @@
             <view class="select_one" bindtap="selectEducation" data-me="本科及以上">本科及以上</view>
           </view>
         </view>
-        <view class="right">
-          <view class="lineblock addUserTitle left">
+      </view>
+      <view class="chooses left" wx:if="{{train_set.is_profession}}">       
+        <view>
+          <view class="lineblock addUserTitle left parkTitle-left">
             <text class="textContract">专业：</text>
           </view>
           <view class="lineblock major left">
-            <input name="profession" maxlength="10" value='{{user_id_detail.profession}}' class="border testNum boxHeight" placeholder="专业" />
-          </view>
+            <input name="profession" maxlength="10" value='{{user_id_detail.profession}}' class="border testNum boxHeight" placeholder="请输入教师专业" style="width:400rpx; border:none;" />
+          </view>·
         </view>
       </view>
     </view>
-    <view class="parkBox">
+    <view style="font-size:20rpx;" wx:if="{{train_set.is_card || train_set.is_health || train_set.is_labor || train_set.is_learnership }}">
       <text class="textContract">请您上传以下证件信息：</text>
     </view>
-    <view class="parkBox">
+    <view class=".card" wx:if="{{train_set.is_card}}" style="margin-top:0;">
       <view class="lineblock parkTitle-left addUserTitle imageTitle">
-        <text class="textContract">身份证：</text>
+        <text class="textContract left" style="width:90%;">身份证正反面：</text>
+        <view class='cardCount right'>
+          <text>{{otherFormat.card_z&&otherFormat.card_f?2:otherFormat.card_z||otherFormat.card_f?1:0}}/2</text>
+        </view>
       </view>
-      <view class="lineblock parkTitle-right photo-image-wrap">
+      <view class="lineblock parkTitle-right photo-image-wrap cardStyle">
         <view class='u-p-m'>
           <image class="uploadBg" data-index='0' data-secondindex='0' src='{{otherFormat.card_z || "/image/upload.png"}}' bindtap='getImage'></image>
-          <text>身份证正面</text>
+          <text wx:if="{{otherFormat.card_z}}" data-index='0' data-secondindex='0' class="del_img" bindtap='del_img'>x</text>
         </view>
         <view class='u-p-m'>
           <image class="uploadBg" data-index='0' data-secondindex='1' src='{{otherFormat.card_f || "/image/upload.png"}}' bindtap='getImage'></image>
-          <text>身份证反面</text>
+          <text wx:if="{{otherFormat.card_f}}" data-index='0' data-secondindex='1' class="del_img" bindtap='del_img'>x</text>
         </view>
       </view>
     </view>
-    <view class="parkBox">
+    <view class=".card" wx:if="{{train_set.is_health}}">
       <view class="lineblock parkTitle-left addUserTitle imageTitle">
-        <text class="textContract">健康证：</text>
+        <text class="textContract left">健康证：</text>
+        <view class='cardCount right'>
+          <text>{{healthNum}}/3</text>
+        </view>
       </view>
-      <view class="lineblock parkTitle-right photo-image-wrap">
+      <view class="lineblock parkTitle-right photo-image-wrap cardStyle">
         <view class='u-p-m'>
           <image class="uploadBg" data-index='1' data-secondindex='0' src='{{otherFormat.health_1 || "/image/upload.png"}}' bindtap='getImage'></image>
-          <text>健康证1</text>
+          <text wx:if="{{otherFormat.health_1}}" data-index='1' data-secondindex='0' class="del_img" bindtap='del_img'>x</text>
         </view>
         <view class='u-p-m'>
           <image class="uploadBg" data-index='1' data-secondindex='1' src='{{otherFormat.health_2 || "/image/upload.png"}}' bindtap='getImage'></image>
-          <text>健康证2</text>
+          <text wx:if="{{otherFormat.health_2}}" data-index='1' data-secondindex='1' class="del_img" bindtap='del_img'>x</text>
         </view>
         <view class='u-p-m'>
           <image class="uploadBg" data-index='1' data-secondindex='2' src='{{otherFormat.health_3 || "/image/upload.png"}}' bindtap='getImage'></image>
-          <text>健康证3</text>
+          <text wx:if="{{otherFormat.health_3}}" data-index='1' data-secondindex='2' class="del_img" bindtap='del_img'>x</text>
         </view>
       </view>
     </view>
-    <view class="parkBox">
+    <view class=".card" wx:if="{{train_set.is_labor}}">
       <view class="lineblock parkTitle-left addUserTitle imageTitle">
-        <text class="textContract">劳动合同：</text>
+        <text class="textContract left">劳动合同：</text>
+        <view class='cardCount right'>
+          <text>{{otherFormat.labor_1&&otherFormat.labor_2?2:otherFormat.labor_1||otherFormat.labor_2?1:0}}/2</text>
+        </view>
       </view>
-      <view class="lineblock parkTitle-right photo-image-wrap">
+      <view class="lineblock parkTitle-right photo-image-wrap cardStyle">
         <view class='u-p-m'>
           <image class="uploadBg" data-index='2' data-secondindex='0' src='{{otherFormat.labor_1 || "/image/upload.png"}}' bindtap='getImage'></image>
-          <text>劳动合同首页</text>
+          <text wx:if="{{otherFormat.labor_1}}" data-index='2' data-secondindex='0' class="del_img" bindtap='del_img'>x</text>
         </view>
         <view class='u-p-m'>
           <image class="uploadBg" data-index='2' data-secondindex='1' src='{{otherFormat.labor_2 || "/image/upload.png"}}' bindtap='getImage'></image>
-          <text>劳动合同尾页</text>
+          <text wx:if="{{otherFormat.labor_2}}" data-index='2' data-secondindex='1' class="del_img" bindtap='del_img'>x</text>
         </view>
       </view>
     </view>
-    <view class="parkBox">
+    <view class=".card"  wx:if="{{train_set.is_learnership}}" style="padding-bottom:100rpx;">
       <view class="lineblock parkTitle-left addUserTitle imageTitle">
-        <text class="textContract">培训协议：</text>
+        <text class="textContract left">培训协议：</text>
+        <view class='cardCount right'>
+          <text wx:if="{{!otherFormat.learnership}}">0</text>
+          <text wx:if="{{otherFormat.learnership}}">1</text>/1
+        </view>
       </view>
-      <view class="lineblock parkTitle-right photo-image-wrap">
+      <view class="lineblock parkTitle-right photo-image-wrap cardStyle">
         <view class='u-p-m'>
           <image class="uploadBg" data-index='3' data-secondindex='0' src='{{otherFormat.learnership || "/image/upload.png"}}' bindtap='getImage'></image>
-          <text>培训协议</text>
+          <text wx:if="{{otherFormat.learnership}}" data-index='3' data-secondindex='0' class="del_img" bindtap='del_img'>x</text>
         </view>
       </view>
     </view>

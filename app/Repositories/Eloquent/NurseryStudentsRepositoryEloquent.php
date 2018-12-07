@@ -35,8 +35,9 @@ class NurseryStudentsRepositoryEloquent extends BaseRepository implements Nurser
         $this->pushCriteria(app(RequestCriteria::class));
     }
     public function saveStudents($data){
-        $this->model->apply_user =$data->apply_user;
+        $this->model->apply_user =isset($data->apply_user)?$data->apply_user:'0';
         $this->model->contract_no =$data->contract_no;
+        $this->model->student_type =$data->client;
         $this->model->student_name =$data->student_name;
         $this->model->student_sex =$data->student_sex;
         $this->model->student_phone =$data->student_phone;

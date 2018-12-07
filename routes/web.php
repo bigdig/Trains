@@ -33,6 +33,16 @@ Route::post('ajax/login', 'Auth\LoginController@ajaxLogin')->name('ajax.login');
 Route::post('ajax/password/email', 'Auth\ForgotPasswordController@ajaxSendResetLinkEmail')->name('ajax.password.email');
 // ajax注册
 Route::post('ajax/register', 'Auth\RegisterController@ajaxRegister')->name('ajax.register');
+Route::group(['prefix' => 'test', 'namespace' => 'Admin'] ,function () {
+    Route::group(['prefix' => 'ajax', 'middleware' => ['origin.set']] ,function () {
+        Route::get('getSchool','ChartController@getSchool')->name('test.getSchool');
+        Route::get('getTopSchool','ChartController@getTopSchool')->name('test.getTopSchool');
+        Route::get('getIncome','ChartController@getIncome')->name('test.getIncome');
+        Route::get('getPosition','ChartController@getPosition')->name('test.getPosition');
+        Route::get('getWxDatas','ChartController@getWxDatas')->name('test.getWxDatas');
+        Route::get('getSchooleByProvinceNameFromBase','ChartController@getSchooleByProvinceNameFromBase')->name('test.getSchooleByProvinceNameFromBase');
+    });
+});
 
 // Admin后台路由
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['auth', 'check.permission']] ,function () {
@@ -41,8 +51,20 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
        return redirect()->route('admin.index');
     });
 
+    //线性图表页面
+    Route::resource('chart','ChartController');
+    Route::group(['prefix' => 'ajax'] ,function () {
+        Route::get('getSchool','ChartController@getSchool')->name('chart.getSchool');
+        Route::get('getTopSchool','ChartController@getTopSchool')->name('chart.getTopSchool');
+        Route::get('getIncome','ChartController@getIncome')->name('chart.getIncome');
+        Route::get('getPosition','ChartController@getPosition')->name('chart.getPosition');
+        Route::get('getWxDatas','ChartController@getWxDatas')->name('chart.getWxDatas');
+        Route::get('getSchooleByProvinceNameFromBase','ChartController@getSchooleByProvinceNameFromBase')->name('chart.getSchooleByProvinceNameFromBase');
+    });
+
     // 后台入口
     Route::get('index', 'IndexController@index')->name('admin.index');
+    Route::get('index_train', 'IndexController@indexTrain')->name('admin.indexTrain');
 
     // ajax获取二级菜单
     Route::get('getchildmenu', 'MenuTableController@ajaxGetChildMenu')->name('menutable.ajaxGetChild');
@@ -71,12 +93,29 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
 	Route::post('entry/refund','EntryController@refund')->name('entry.refund');
     Route::get('entry/export_data','EntryController@export_data');
     Route::resource('entry','EntryController');
+	Route::post('students/done','StudentsController@done');
     Route::post('students/sign','StudentsController@sign');
     Route::post('students/refund','StudentsController@refund');
     Route::post('students/info','StudentsController@info');
+    Route::post('students/cert','StudentsController@cert');
     Route::post('students/check','StudentsController@check');
     Route::get('students/export_data','StudentsController@export_data');
+    Route::get('students/go_done/{order_students_id}','StudentsController@go_done');
+    Route::post('students/over_done','StudentsController@over_done');
+    Route::get('students/test','StudentsController@test');
     Route::resource('students','StudentsController');
+	
+	//培训报表
+	Route::get('report/entry_list/{contract_no}','ReportController@entry_list');
+	Route::resource('report','ReportController');
+	/**
+     * 培训设置
+     */
+    Route::resource('profess','TeachProfessController');
+    Route::resource('course','TeachCourseController');
+	Route::get('teach/home','TeachController@home');
+	Route::get('teach/get_train_record/{student_id}','TeachController@get_train_record');
+    Route::resource('teach','TeachController');
     // 博客路由
     Route::post('article/get_articles', 'ArticleController@getArticles')->name('article.getArticles');
     Route::post('article/upload_image', "ArticleController@uploadImage")->name('article.uploadImage');
@@ -107,10 +146,14 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['aut
 //
 Route::group(['prefix' => 'member', 'namespace' => 'Member', 'middleware' => ['auth']], function () {
     Route::get('/', function () {
-        return redirect('member/index');
+        //return redirect('member/index');
+		return redirect()->route('admin.index');
     });
+	Route::get('index',function(){
+		return redirect()->route('admin.index');
+	});
     // 会员中心
-    Route::get('index', 'MemberController@index')->name('member.index');
+    //Route::get('index', 'MemberController@index')->name('member.index');
     // 资料编辑
     Route::get('edit', 'MemberController@edit')->name('member.edit');
     // 资料编辑保存

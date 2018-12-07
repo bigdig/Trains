@@ -1,0 +1,56 @@
+/* pages/mine/certificate/detailsInfo/index.wxss */
+.contens{
+  width: 740rpx;
+  padding-left: 2.3%;
+  margin-top: 20rpx;
+  font-size: 20rpx;
+}
+.type_one{
+  position: relative;
+}
+.zsImg{
+  width: 720rpx;
+  height: 1000rpx;
+}
+.zsImg_photo{
+  width: 80rpx;
+  height: 120rpx;
+  position: absolute;
+  top:358rpx;
+  left:320rpx;
+}
+.line{
+  position: absolute;
+  top: 715rpx;
+}
+.l_one .a{
+  margin-left: 158rpx
+}
+.l_one .b{
+  margin-left: 144rpx
+}
+.sc_name{
+  position:absolute;
+  top:1rpx;
+  left:540rpx;
+  width:130rpx;
+
+}
+.l_one .c{
+  margin-left: 100rpx
+}
+.l_two{
+  margin-top: 12rpx;
+}
+.l_two .d{
+  margin-left: 168rpx;
+}
+.l_two .f{
+  margin-left: 145rpx;
+}
+.l_three{
+  margin-top: 40rpx;
+}
+.l_three .e{
+  margin-left: 104rpx;
+}

@@ -13,7 +13,7 @@
 .edit {
   width: 80rpx;
   height: 80rpx;
-  text-align: right;
+  text-align: center;
 }
 
 .editImg {
@@ -34,7 +34,56 @@
   width: 100%;
   bottom: 0;
   text-align: center;
-  background: #ff5a8e;
+  background: #09bb07;
   color: #fff;
   font-size: 34rpx;
+}
+.btn1{
+  width:50%;
+  background: #fff;
+  color:#000;
+  border:1px solid #e6e6e6;
+}
+.btn2{
+  width:50%;
+  right:0;
+  border:1px solid #09bb07;
+}
+.maskLayer{
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: #000;
+  opacity: 0.2;
+  overflow: hidden;
+  z-index: 1000;
+  color: #fff;
+}
+.choose{
+  width: 100%;
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 2000;
+  background: #fff;
+  padding-top: 20rpx;
+}
+.info{
+  margin-bottom: 10rpx;
+  border-bottom: 3px solid #e7e7e7;
+}
+.choose .userName{
+  margin-bottom:30rpx;
+  margin-right: 0;
+  text-align: center;
+  
+}
+.cancle{
+height:60rpx;
+line-height:60rpx;
+margin-top: 10rpx;
+
 }

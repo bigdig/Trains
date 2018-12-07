@@ -7,6 +7,8 @@ use Yajra\Datatables\Facades\Datatables;
 use App\Models\Role;
 use App\Repositories\Eloquent\UserRepositoryEloquent;
 use App\Models\User;
+use Validator;
+use Auth;
 
 class UserController extends Controller
 {
@@ -33,7 +35,13 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $roles = Role::all();
+
+        $data = [
+            'roles' => $roles,
+			'is_edit'=>0
+        ];
+        return view('admin.user.user_edit', $data);
     }
 
     /**
@@ -44,9 +52,33 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+		if( Auth::user()->hasRole('admin') ){
+			$validator = Validator::make($request->all(), [
+				'name' => 'required|max:255',
+				'email' => 'required|email|max:255|unique:users',
+				'password' => 'required|min:6',
+			]);
+			if(!$validator->fails()) {
+				$user = User::create([
+					'name' => $request->get('name'),
+					'email' => $request->get('email'),
+					'password' => bcrypt($request->get('password')),
+				]);
+				if( $this->role_user($request,$user) ){
+					return redirect()->route('user.index');
+				}
+			}
+		}
     }
-
+	protected function role_user(Request $request, $user)
+    {
+        $role_user = Role::where( 'id',$request->get('role_id') )->first();
+        $user->attachRole($role_user);
+        if ($user->hasRole('user')) {
+            return false;
+        }
+        return true;
+    }
     /**
      * Display the specified resource.
      *
@@ -73,6 +105,7 @@ class UserController extends Controller
         $data = [
             'roles' => $roles,
             'user' => $user,
+			'is_edit'=>1
         ];
         return view('admin.user.user_edit', $data);
     }

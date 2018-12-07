@@ -36,6 +36,7 @@ class TrainsRepositoryEloquent extends BaseRepository implements TrainsRepositor
     }
 
     public function saveTrain($train_info){
+        $this->model->train_category = $train_info->train_category;
         $this->model->title = $train_info->title;
         $this->model->banner = $train_info->banner;
         $this->model->pre_num = $train_info->pre_num;
@@ -58,6 +59,9 @@ class TrainsRepositoryEloquent extends BaseRepository implements TrainsRepositor
     public function updateTrain($id, $train_info)
     {
         $train = $this->find($id);
+		if(!empty($train_info->train_category)){			
+			$train->train_category = $train_info->train_category;
+		}
         $train->title      = $train_info->title;
         $train->pre_num    = $train_info->pre_num;
         $train->jia_sale_num= $train_info->jia_sale_num;

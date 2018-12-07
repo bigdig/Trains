@@ -1,0 +1,37 @@
+<!--pages/mine/index.wxml-->
+<view class="container">
+  <view class="userinfo">
+    <block wx:if="{{canIUse}}">
+      <image wx:if="{{userInfo}}" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+      <text wx:if="{{userInfo}}">{{userInfo.nickName}}</text>
+      <button wx:if="{{!userInfo}}" open-type="getUserInfo" data-cert='false' bindgetuserinfo="bindGetUserInfo">授权登录</button>
+    </block>
+    <block wx:else>请升级微信版本</block>
+  </view>
+<view>
+
+</view>
+  <view class='content'>
+    <view bindtap="goMyIndex" class="signUp" wx:if="{{hasUserInfo}}">
+      <text class="user-signUp left size">{{signUp}}</text>
+      <text class="right arrow"></text>
+    </view>
+    <view  class="signUp" wx:else="{{!hasUserInfo}}">
+       <button open-type="getUserInfo"   class="user-signUp left size"  type="primary"  bindgetuserinfo="bindGetUserInfo" hover-class="other-button-hover">{{signUp}}</button>
+      <text class="right arrow"></text>
+    </view>
+
+    <view  class="signUp" wx:if="{{!hasUserInfo}}">
+       <button open-type="getUserInfo" data-cert='false'    class="user-signUp left size"  type="primary"  bindgetuserinfo="bindGetUserInfo" hover-class="other-button-hover">{{certificates}}</button>
+      <text class="right arrow"></text>
+    </view>
+    <view class="certificates" bindtap='goCertificate' wx:elif="{{allowPhone}}">
+      <text class="certificate left size">{{certificates}}</text>
+      <text class="right arrow"></text>
+    </view>
+    <view class="certificates" wx:else="{{!allowPhone}}">
+<button  open-type="getPhoneNumber"  class="certificate left size" type="primary"   bindgetphonenumber="getPhoneNumber"  hover-class="other-button-hover">{{certificates}}</button>
+<text class="right arrow"></text>
+    </view>
+  </view>
+</view>

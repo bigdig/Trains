@@ -22,7 +22,7 @@ class Entry extends Model implements Transformable
      * @var array
      */
     protected $fillable = [
-        'contract_no','park_name','apply_user_name','apply_phone','apply_num','apply_form','train_id','total_fee','is_paid','payment','status','from',
+        'contract_no','park_name','apply_user_name','apply_phone','apply_num','apply_form','train_id','total_fee','is_paid','payment','status','from','order_source',
         'pay_time','remark','order_sn'
     ];
     public function get_train(){

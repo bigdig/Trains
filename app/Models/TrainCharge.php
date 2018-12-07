@@ -15,5 +15,6 @@ class TrainCharge extends Model
         'attr2_name','attr2_value','attr2_price',
         'attr3_name','attr3_value','attr3_price',
 		'is_card','is_health','is_labor','is_learnership',
+		'is_cert','is_idcard','is_school','is_education','is_profession'
     ];
 }

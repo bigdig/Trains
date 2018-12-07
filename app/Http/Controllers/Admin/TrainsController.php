@@ -14,6 +14,7 @@ use App\Services\ImageUpload;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Response;
 use Cache;
+use Config;
 
 class TrainsController extends Controller
 {
@@ -37,6 +38,14 @@ class TrainsController extends Controller
     {
         //
 		//Cache::flush();
+		
+		if(Auth::user()->hasRole('admin')){
+			$request->client = 0;
+		}elseif(Auth::user()->hasRole('qnursery')){
+			$request->client = Config::get('category.qnursery');
+		}elseif(Auth::user()->hasRole('ynursery')){
+			$request->client = Config::get('category.ynursery');
+		}
         $lists = Trains::where(function ($query) use ($request){
             if($request->has('title')){
                 $query->where('title','like','%'.$request->get('title').'%');
@@ -56,6 +65,9 @@ class TrainsController extends Controller
             if($request->has('status')){
                 $query->where('status',$request->get('status'));
             }
+			if($request->client){
+				$query->where('train_category',$request->client);
+			}
         })->whereHas(
             'admin_user',function($query) use ($request){
                 if($request->has('recorder')){
@@ -108,6 +120,13 @@ class TrainsController extends Controller
         $train_info = $request;
         $train_info->recorder = Auth::user()->id;
         $train_info->status = 1;
+		if(Auth::user()->hasRole('admin')){
+			$train_info->train_category = $request->get('train_category');
+		}elseif(Auth::user()->hasRole('qnursery')){
+			$train_info->train_category = Config::get('category.qnursery');
+		}elseif(Auth::user()->hasRole('ynursery')){
+			$train_info->train_category = Config::get('category.ynursery');
+		}
         // 上传图片
         if ($request->hasFile('banner')) {
             $upload_status = $this->imageUpload->uploadImage($request->file('banner'));
@@ -129,15 +148,20 @@ class TrainsController extends Controller
                 'attr1_value'    =>$request->get('attr1_value_'.$charge_way,''),
                 'attr1_price'    =>$request->get('attr1_price_'.$charge_way,'0'),
                 'attr2_name'     =>$request->get('attr2_name_'.$charge_way,''),
-                'attr2_value'     =>$request->get('attr2_value_'.$charge_way,''),
-                'attr2_price'     =>$request->get('attr2_price_'.$charge_way,'0'),
+                'attr2_value'    =>$request->get('attr2_value_'.$charge_way,''),
+                'attr2_price'    =>$request->get('attr2_price_'.$charge_way,'0'),
                 'attr3_name'     =>$request->get('attr3_name_'.$charge_way,''),
-                'attr3_value'     =>$request->get('attr3_value_'.$charge_way,''),
-                'attr3_price'     =>$request->get('attr3_price_'.$charge_way,'0'),
-				'is_card'         =>$request->get('is_card','0'),
-                'is_health'       =>$request->get('is_health','0'),
-                'is_labor'        =>$request->get('is_labor','0'),
-                'is_learnership'  =>$request->get('is_learnership','0'),
+                'attr3_value'    =>$request->get('attr3_value_'.$charge_way,''),
+                'attr3_price'    =>$request->get('attr3_price_'.$charge_way,'0'),
+				'is_card'        =>$request->get('is_card','0'),
+                'is_health'      =>$request->get('is_health','0'),
+                'is_labor'       =>$request->get('is_labor','0'),
+                'is_learnership' =>$request->get('is_learnership','0'),
+                'is_cert' 		 =>$request->get('is_cert','0'),
+                'is_idcard' 	 =>$request->get('is_idcard','0'),
+                'is_school' 	 =>$request->get('is_school','0'),
+                'is_education' 	 =>$request->get('is_education','0'),
+                'is_profession'  =>$request->get('is_profession','0'),
             ]);
             return redirect()->route('trains.index');
         }
@@ -200,6 +224,9 @@ class TrainsController extends Controller
     {
         //
         $train_info = $request;
+		if( Auth::user()->hasRole('admin') ){
+			$train_info->train_category = $request->get('train_category');
+		}
         // 上传图片
         if ($request->hasFile('banner')) {
             $upload_status = $this->imageUpload->uploadImage($request->file('banner'));
@@ -231,6 +258,11 @@ class TrainsController extends Controller
                 'is_health'       =>$request->get('is_health','0'),
                 'is_labor'        =>$request->get('is_labor','0'),
                 'is_learnership'  =>$request->get('is_learnership','0'),
+				'is_cert' 		  =>$request->get('is_cert','0'),
+				'is_idcard' 	 =>$request->get('is_idcard','0'),
+                'is_school' 	 =>$request->get('is_school','0'),
+                'is_education' 	 =>$request->get('is_education','0'),
+                'is_profession'  =>$request->get('is_profession','0'),
             ]);
             return redirect()->route('trains.index');
         }

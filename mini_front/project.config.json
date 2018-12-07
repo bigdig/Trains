@@ -4,16 +4,22 @@
 		"ignore": []
 	},
 	"setting": {
-		"urlCheck": true,
+		"urlCheck": false,
 		"es6": true,
 		"postcss": true,
 		"minified": true,
-		"newFeature": true
+		"newFeature": true,
+		"nodeModules": false
 	},
 	"compileType": "miniprogram",
 	"libVersion": "2.1.1",
 	"appid": "wx784738de34f8f5d6",
-	"projectname": "%E5%9F%B9%E8%AE%AD%E6%8A%A5%E5%90%8D",
+	"projectname": "%E6%8A%A5%E5%90%8D",
+	"scripts": {
+		"beforeCompile": "",
+		"beforePreview": "",
+		"beforeUpload": ""
+	},
 	"condition": {
 		"search": {
 			"current": -1,
@@ -32,7 +38,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": -1,
+			"current": 7,
 			"list": [
 				{
 					"id": -1,
@@ -57,13 +63,13 @@
 				{
 					"id": -1,
 					"name": "我的报名",
-					"pathName": "pages/my/index",
+					"pathName": "pages/mine/my/index",
 					"query": ""
 				},
 				{
 					"id": -1,
 					"name": "状态详情",
-					"pathName": "pages/my/allInfo/index",
+					"pathName": "pages/mine/my/allInfo/index",
 					"query": ""
 				},
 				{
@@ -77,6 +83,16 @@
 					"name": "添加学员",
 					"pathName": "pages/index/signUP/signUpList/addInfo/index",
 					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "培训证书",
+					"pathName": "pages/mine/certificate/index"
+				},
+				{
+					"id": -1,
+					"name": "证书详情",
+					"pathName": "pages/mine/certificate/detailsInfo/index"
 				}
 			]
 		}

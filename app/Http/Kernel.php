@@ -63,5 +63,6 @@ class Kernel extends HttpKernel
         'check.permission' => \App\Http\Middleware\CheckPermission::class,
         //小程序签名验证
         'mini.sign'=>\App\Http\Middleware\CheckSign::class,
+        'origin.set' => \App\Http\Middleware\AccessControlAllowOrigin::class,
     ];
 }

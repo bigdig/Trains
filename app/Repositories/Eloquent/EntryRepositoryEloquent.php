@@ -47,8 +47,9 @@ class EntryRepositoryEloquent extends BaseRepository implements EntryRepository
         $this->model->is_paid     = 1;
         $this->model->payment     = $data->payment;
         $this->model->pay_time    = $data->pay_time;
-        $this->model->status      = 0;
+        $this->model->status      = 6;
         $this->model->from        = 2;
+        $this->model->order_source= $data->client;
 
         $this->model->save();
         return $this->model->id;
@@ -68,6 +69,7 @@ class EntryRepositoryEloquent extends BaseRepository implements EntryRepository
         $this->model->payment     = 1;
         $this->model->status      = $data['status'];
         $this->model->from        = 1;
+		$this->model->order_source= $data['client'];
         $this->model->save();
         return $this->model->id;
     }

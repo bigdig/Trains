@@ -1,4 +1,11 @@
-<navigator class="addStudy" url='/pages/index/signUP/signUpList/addInfo/index?source_url=/pages/index/signUP/signUpList/editInfo/index&train_id={{train_id}}&contract_no={{contract_no}}&type_unit={{type_unit}}&unit_num={{unit_num}}'>新增培训学员</navigator>
+<view wx:if="{{change=='true'}}">
+<navigator class="addStudy" url='/pages/index/signUP/signUpList/addInfo/index?change={{change}}&source_url=/pages/index/signUP/signUpList/editInfo/index&train_id={{train_id}}&contract_no={{contract_no}}&userId={{userId}}&order_id={{order_id}}'>新增培训学员</navigator>
+</view>
+<view wx:else>
+<navigator class="addStudy" url='/pages/index/signUP/signUpList/addInfo/index?source_url=/pages/index/signUP/signUpList/editInfo/index&train_id={{train_id}}&contract_no={{contract_no}}&type_unit={{type_unit}}&unit_num={{unit_num}}&hasgo=1'>新增培训学员</navigator>
+</view>
+
+
 <view class="editBox students">
   <view wx:for="{{studentList}}" class="studentBox">
     <view class="lineblock select">
@@ -11,11 +18,37 @@
       </view>
       <text class="block userPhone">{{item.student_phone}}</text>
     </view>
-    <view class="lineblock edit">
-      <text data-index="{{index}}" data-id="{{item.id}}" class="lineblock editImg" bindtap='goSignUpListIndex'></text>
+    <view class="lineblock edit" data-index="{{index}}" data-id="{{item.id}}" bindtap='goSignUpListIndex'>
+      <text  class="lineblock editImg"></text>
     </view>
   </view>
 </view>
-<view class="sure" data-index="10000000" bindtap='goSignUpListIndex'>
+
+<view wx:if="{{change=='true'}}" >
+  <view wx:if="{{orderStudentList.length>1}}">
+    <view class="sure btn1" data-index="10000001" bindtap='goChangePeopleTwo'>
+      <text>继续更改</text>
+    </view>
+    <view class="sure btn2" data-index="10000001" bindtap='goChangePeople'>
+      <text>提交</text>
+    </view>
+  </view>
+  <view wx:else>
+   <view class="sure" data-index="10000001" bindtap='goChangePeople'>
+      <text>提交</text>
+    </view>
+  </view>
+</view>
+<view class="sure" wx:else data-index="10000000" bindtap='goSignUpListIndex'>
   <text>确认</text>
 </view>
+
+<view class='choose' wx:if="{{chooseChange}}" animation='{{animationData}}'>
+ <view wx:for="{{orderStudentList}}" class='info'>
+    <view class='userName' data-id="{{item.id}}" bindtap='gochangeSing'>
+            <text>{{item.student_name}}</text>
+    </view>
+ </view>
+    <view class='userName cancle' bindtap='hideModal'><text>取消</text></view>
+</view>
+ <view class='maskLayer' wx:if="{{chooseChange}}" bindtap='hideModal'></view>

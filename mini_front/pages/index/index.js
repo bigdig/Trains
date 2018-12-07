@@ -8,7 +8,13 @@ Page({
   data: {
     message: 'Hello MINA!',
     list: [],
-    pay_type_list: []
+    pay_type_list: [],
+    hasMoreTrain:false,
+    perPage:5,
+    page:1,
+    hasmoreData: true,
+    hiddenloading: true
+
   },
   compare(property) {
     return function(obj1, obj2) {
@@ -18,21 +24,34 @@ Page({
     }
   },
   /*获取首页列表数据*/
-  getList() {
+  getList(v) {
     let _that = this;
-    wx.request({
-      url: config.trains,
-      data: {
-        r: Math.random()
-      },
-      method: 'GET',
-      success: function(res) {
-        let datas = res.data
-        if (datas.code == "200") {
-          wx.showLoading({
-            title: '加载中',
-            success:function(){
-              let datas_list_deil = datas.data;
+    if(v){
+      _that.data.page++;
+    }
+    wx.showLoading({
+      title: '加载中',
+      mask: true,
+      success: function () {
+        wx.request({
+          url: config.trains,
+          data: {
+            perPage:_that.data.perPage,
+            page: _that.data.page,
+            r: Math.random(),
+            client:1
+          },
+          method: 'GET',
+          success: function (res) {
+            let datas = res.data
+            if (datas.code == "200") {
+            let datas_list_deil = datas.data.data; //新版
+              let last_page = datas.data.last_page;
+              if(last_page>1 && _that.data.page<last_page){
+               // _that.setData({ hiddenloading: false });//隐藏显示更多
+              }else{
+                _that.setData({ hasmoreData: false, hiddenloading: true })
+              }
               let new_datas = [];
               for (let y = 0; y < datas_list_deil.length; y++) {
                 let thatOne = datas_list_deil[y];
@@ -56,17 +75,29 @@ Page({
                 new_datas.push(thatOne);
               }
               _that.setData({
-                list: new_datas
+                list: [..._that.data.list,...new_datas]
               });
-              setTimeout(function(){
-                wx.hideLoading();
-              },1000)
-            }
-          })
-        }
-      },
 
+              setTimeout(function () {
+                wx.hideLoading();
+                wx.stopPullDownRefresh();
+              }, 1000)
+
+            }
+          },
+          fail:function(){
+            setTimeout(function () {
+              wx.hideLoading();
+              wx.stopPullDownRefresh();
+            }, 1000)
+          }
+        })
+      }
     })
+  },
+  //加载更多活动
+  getMoreTrain(){
+    this.getList(1);
   },
   goUpIndex(e) {
     let id = e.currentTarget.dataset.id;
@@ -124,14 +155,19 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function() {
-    
+    this.setData({ page: 1, list: [], hasmoreData: true, hiddenloading: true })
+    this.getList();
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function() {
-
+    // this.setData({ hiddenloading: false })
+    if (this.data.hasmoreData){
+      this.getList(1);
+    }
+   
   },
 
   /**

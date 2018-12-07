@@ -22,7 +22,7 @@ class CheckPermission
      */
     public function handle($request, Closure $next)
     {
-
+       // \Cache::flush();
         $uri = Route::currentRouteName();
         $permission_info = Permission::where(['uri' => $uri])->first();
         //如果查不到路由名对应的权限直接放行

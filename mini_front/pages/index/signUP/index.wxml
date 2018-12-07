@@ -1,5 +1,9 @@
 <import src="./../../../wxParse/wxParse.wxml" />
 <view class="initView">
+ <view>
+      <view class="title">{{title}}</view>
+       <image class="img" src="{{banner}}"></image>
+ </view>
   <template is="wxParse" data="{{wxParseData:article.nodes}}" />
   <radio-group class="group" bindchange="radioChange">
     <view class="label-2" wx:for="{{radioItems}}">
@@ -12,23 +16,24 @@
       </label>
     </view>
   </radio-group>
-  <view class="agr_mar">
+  <!-- <view class="agr_mar">
     <checkbox class="agree_check" type='checkout' disabled='{{readStatement}}' checked='{{readStatementC}}' bindtap='agree'></checkbox>
     <text class="t1">已同意</text>
     <text class="trainMement" bindtap="showContent">{{trainS}}</text>
-  </view>
-
+  </view> -->
+<view class="lookSM" bindtap="lookSM">查看声明</view>
 </view>
 <view>
-  <button wx:if="{{canIUse}}" open-type="getUserInfo" class="btnFix" type="primary" disabled='{{traninBmBefor}}' bindgetuserinfo="bindGetUserInfo" hover-class="other-button-hover">报名</button>
-
+  <button wx:if="{{!hasUserInfo}}" open-type="getUserInfo" class="btnFix"  disabled='{{traninBmBefor}}'  type="primary"   bindgetuserinfo="bindGetUserInfo" hover-class="other-button-hover">{{messageButton}}</button>
+<button wx:elif="{{!allowPhone}}" open-type="getPhoneNumber"   disabled='{{traninBmBefor}}'  class="btnFix" type="primary"   bindgetphonenumber="getPhoneNumber"  hover-class="other-button-hover">{{messageButton}} </button>
+<button wx:else  class="btnFix" type="primary"   disabled='{{traninBmBefor}}'   bindtap="getInfo" hover-class="other-button-hover">{{messageButton}} </button>
 </view>
-<view class="alertBg formStyle_train" wx:if="{{showBmPop_train}}">
+<!-- <view class="alertBg formStyle_train" wx:if="{{showBmPop_train}}">
   <view class="train_con">
     <template is="wxParse" data="{{wxParseData:article2.nodes}}" />
   </view>
   <text class="close" bindtap='closePop'>关闭</text>
-</view>
+</view> -->
 <view class="alertBg" wx:if="{{showBmPop}}">
   <view class="formStyle">
     <form bindsubmit="formSubmit" class="formDate">

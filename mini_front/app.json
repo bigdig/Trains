@@ -5,9 +5,12 @@
     "pages/index/signUP/signUpList/index",
     "pages/index/signUP/signUpList/editInfo/index",
     "pages/index/signUP/signUpList/addInfo/index",
-    "pages/my/index",
-    "pages/my/allInfo/index",
-    "pages/my/allInfo/detailsInfo/index"
+    "pages/mine/my/index",
+    "pages/mine/my/allInfo/index",
+    "pages/mine/my/allInfo/detailsInfo/index",
+    "pages/mine/index",
+    "pages/mine/certificate/index",
+    "pages/mine/certificate/detailsInfo/index"
   ],
   "window": {
     "navigationBarTitleText": "在线培训报名"
@@ -24,10 +27,10 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/my/index",
+        "pagePath": "pages/mine/index",
         "iconPath": "image/icon_API.png",
         "selectedIconPath": "image/icon_API_HL.png",
-        "text": "我的报名"
+        "text": "我的"
       }
     ]
   },
@@ -35,5 +38,6 @@
     "request": 10000,
     "downloadFile": 10000
   },
-  "debug": true
+  "debug": true,
+  "enablePullDownRefresh":true
 }

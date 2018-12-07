@@ -21,6 +21,8 @@ use App\Models\RefundOrder;
 use App\Models\OrderStudents;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Auth;
+use Config;
 
 class EntryController extends Controller
 {
@@ -46,6 +48,13 @@ class EntryController extends Controller
     {
 
         //
+		if(Auth::user()->hasRole('admin')){
+			$request->client = 0;
+		}elseif(Auth::user()->hasRole('qnursery')){
+			$request->client = Config::get('category.qnursery');
+		}elseif(Auth::user()->hasRole('ynursery')){
+			$request->client = Config::get('category.ynursery');
+		}
         $lists = Entry::where(function($query) use ($request){
             if($request->has('contract_no')){
                 $query->where('contract_no',$request->get('contract_no'));
@@ -59,12 +68,15 @@ class EntryController extends Controller
             if($request->has('from')){
                 $query->where('from',$request->get('from'));
             }
-            if($request->get('train_id')){
+			if($request->get('train_id')){
                 $query->where('train_id',$request->get('train_id'));
             }
-            if($request->get('is_paid') || $request->get('is_paid') ==='0'){
+			if($request->get('is_paid') || $request->get('is_paid') ==='0'){
                 $query->where('is_paid',$request->get('is_paid'));
             }
+			if($request->client){
+				$query->where('order_source',$request->client);
+			}
         })->with(['get_train'])
             ->orderBy('created_at','desc')
             ->paginate(10);
@@ -74,7 +86,7 @@ class EntryController extends Controller
 				$lists[$key]->trade_no = $trade_no;
 			}
 		}
-        $trains = Trains::where('status',2)->get();
+		$trains = Trains::where('status',2)->get();
         return view('admin.entry.index',['lists'=>$lists,'trains'=>$trains,'search'=>$request->toArray()]);
     }
     /**
@@ -106,13 +118,26 @@ class EntryController extends Controller
     public function create()
     {
         //
-        $trains = Trains::where('status','2')->orderBy('id','desc')->get();
+		if( Auth::user()->hasRole('admin') ){
+			$trains = Trains::where('status','2')->orderBy('id','desc')->get();
+		}elseif(Auth::user()->hasRole('qnursery')){
+			$trains = Trains::where('status','2')->where( 'train_category',Config::get('category.qnursery') )->orderBy('id','desc')->get();
+		}elseif(Auth::user()->hasRole('ynursery')){
+			$trains = Trains::where('status','2')->where( 'train_category',Config::get('category.ynursery') )->orderBy('id','desc')->get();
+		}
         return view('admin.entry.create',['trains'=>$trains]);
     }
-    /**
+	/**
      * 导出
      */
     public function export_data(Request $request){
+		if(Auth::user()->hasRole('admin')){
+			$request->client = 0;
+		}elseif(Auth::user()->hasRole('qnursery')){
+			$request->client = Config::get('category.qnursery');
+		}elseif(Auth::user()->hasRole('ynursery')){
+			$request->client = Config::get('category.ynursery');
+		}
         $lists = Entry::where(function($query) use ($request){
             if($request->has('contract_no')){
                 $query->where('contract_no',$request->get('contract_no'));
@@ -132,6 +157,9 @@ class EntryController extends Controller
             if($request->get('is_paid')){
                 $query->where('is_paid',$request->get('is_paid'));
             }
+			if($request->client){
+				$query->where('order_source',$request->client);
+			}
         })->with(['get_train'])
             ->orderBy('created_at','desc')
             ->get();
@@ -139,6 +167,14 @@ class EntryController extends Controller
             if($val->is_paid==1){
                 $trade_no = PayInfo::where('order_sn',$val->order_sn)->value('trade_no');
                 $lists[$key]->trade_no = $trade_no;
+				
+				//学员手机号
+                $student_phone = '';
+                $students_info = OrderStudents::with('nursery_student')->where('order_id',$val->id)->get();
+                foreach($students_info as $student){
+                    $student_phone .= $student->nursery_student->student_phone.',';
+                }
+                $lists[$key]->students_phone = $student_phone;
             }
         }
         $spreadsheet = new Spreadsheet();
@@ -154,6 +190,7 @@ class EntryController extends Controller
         $worksheet->setCellValueByColumnAndRow(7, 1, '支付费用');
         $worksheet->setCellValueByColumnAndRow(8, 1, '支付时间');
         $worksheet->setCellValueByColumnAndRow(9, 1, '交易号');
+		$worksheet->setCellValueByColumnAndRow(10, 1, '学员手机号');
 
         for($i=0;$i<count($lists);$i++){
             $j =$i+2;
@@ -166,6 +203,7 @@ class EntryController extends Controller
             $worksheet->setCellValueByColumnAndRow(7,$j,$lists[$i]->total_fee);
             $worksheet->setCellValueByColumnAndRow(8,$j,$lists[$i]->pay_time);
             $worksheet->setCellValueByColumnAndRow(9,$j,$lists[$i]->trade_no );
+			$worksheet->setCellValueByColumnAndRow(10,$j,$lists[$i]->students_phone );
         }
         $filename = '培训报名表.xlsx';
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -176,7 +214,7 @@ class EntryController extends Controller
         echo $writer->save('php://output');die();
 
     }
-    /**
+	/**
      * 退款
      */
     public function refund(Request $request){
@@ -189,6 +227,7 @@ class EntryController extends Controller
             $miniProgram = Factory::payment($this->config);
             $refund_no = time().rand(111,333).$entry->train_id;
             $result = $miniProgram->refund->byOutTradeNumber($entry->order_sn,$refund_no,$entry->total_fee*100,$entry->total_fee*100,[
+                //'notify_url'=>'',
                 'refund_desc'=>$remark
             ]);
             Log::error('return refund info: '.json_encode($result));
@@ -247,14 +286,15 @@ class EntryController extends Controller
     public function store(EntryPost $request)
     {
         $data = $request;
+        $train_info = Trains::where('id',$data->train_id)->first();
         $studnet_info =NurseryStudents::where('student_phone',$data->input('student_phone'))->first();
+		$data->client = $train_info->train_category;
         if(!$studnet_info){
             $student_id = $this->nurseryStudentsRepositoryEloquent->saveStudents($data);
             $data->student_id = $student_id;
         }else{
             $data->student_id = $studnet_info['id'];
         }
-        $train_info = Trains::where('id',$data->train_id)->first();
         if(!$train_info['pre_num']){
             return redirect()->route('entry.index')->withErrors('报名培训人数已满')->withInput();
         }

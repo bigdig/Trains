@@ -1,0 +1,25 @@
+<view class="contens">
+  <view class="type_one"  wx:for="{{arZs}}" wx:key="{{item.id}}">
+    <image class='zsImg' src='/image/zs.png'></image>
+     <image class='zsImg_photo' src='{{item.cert_picture}}'></image>
+    <view class="line">
+       <view class="l_one">
+          <text class="a">{{item.student_name}}</text>
+          <text class="b">{{item.student_position}}</text>
+       </view>
+        <text class="sc_name">{{item.park_name}}</text>
+       <view class="l_two">
+          <text class="d">{{item.train_name}}</text>
+       </view>
+       <view class="l_two">
+          <text class="d">{{item.score}}</text>
+       </view>
+       <view class="l_two">
+          <text class="f">{{item.number}}</text>
+       </view>
+       <view class="l_three">
+          <text class="e">{{item.created_at}}</text>
+       </view>
+    </view>
+  </view>
+</view>

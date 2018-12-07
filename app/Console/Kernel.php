@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\CancelOrder::class
+        \App\Console\Commands\CancelOrder::class,
+        \App\Console\Commands\UmsPost::class,
     ];
 
     /**
@@ -26,6 +27,7 @@ class Kernel extends ConsoleKernel
     {
         //10分钟一趟
         $schedule->command('cancelorder')->everyTenMinutes();
+        $schedule->command('umspost');
     }
 
     /**

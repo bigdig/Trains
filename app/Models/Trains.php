@@ -21,7 +21,7 @@ class Trains extends Model implements Transformable
      * @var array
      */
     protected $fillable =[
-        'title','banner','pre_num','jia_sale_num','train_start','train_end','train_adress','apply_start','apply_end','desc','desc_md','is_free','status','sort','shengming','recorder'
+        'train_category','title','banner','pre_num','jia_sale_num','train_start','train_end','train_adress','apply_start','apply_end','desc','desc_md','is_free','status','sort','shengming','recorder'
     ];
     protected $hidden=[
         

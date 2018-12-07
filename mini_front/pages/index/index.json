@@ -1,3 +1,5 @@
 {
-  "navigationBarTitleText": "在线培训报名"
+  "navigationBarTitleText": "在线培训报名",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
 }

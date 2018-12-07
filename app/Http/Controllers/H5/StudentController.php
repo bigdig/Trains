@@ -40,7 +40,6 @@ class StudentController extends Controller
     public function check_student(Request $request){
         $code          = $request->get('code','');
         $student_phone = $request->get('student_phone','');
-		/*
         if(!$code && !$student_phone){
             return response()->json(['code'=>'1000','msg'=>'缺少参数']);
         }
@@ -53,7 +52,7 @@ class StudentController extends Controller
         }
         if($is_true->dead_time < time()){
             return response()->json(['code'=>'1007','msg'=>'验证码过期']);
-        }*/
+        }
         $order_student_info = Students::where('is_paid',1)
             ->whereHas('get_order',function ($query) use($request){
                 $query->where('is_paid',1)->where('train_id',$request->get('train_id'));
@@ -68,13 +67,15 @@ class StudentController extends Controller
 				}
 			])
             ->first();
-			/*
+		if(empty($order_student_info)){
+            return response()->json(['code'=>'0','msg'=>'未找到学员信息']);
+        }	
         if($order_student_info->status !=1){
-            return response()->json(['code'=>'0','msg'=>'状态异常']);
-        }*/
+            return response()->json(['code'=>'0','msg'=>'未审核']);
+        }
         $order_student_info->status    =3;
         $order_student_info->sign_time =date("Y-m-d H:i:s");
-        //$order_student_info->save();
+        $order_student_info->save();
         return response()->json(['code'=>'200','msg'=>'ok','data'=>$order_student_info]);
     }
     /**

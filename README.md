@@ -8,7 +8,15 @@ Laravel 做后端管理和API
 ---
 小程序培训报名+后端管理
 
-#部署安装
+功能说明
+---
+    1、实现了线上报名，线下参加培训的功能。 
+    2、依据client不同，支持多客户端，绑定角色，实现分管。
+    3、支持培训证书发放
+    4、数据统计
+
+部署安装
+===
 
 小程序
 --
@@ -36,7 +44,8 @@ https://lipis.github.io/bootstrap-sweetalert/
 
 https://github.com/andersao/l5-repository
 
-##性能优化
+性能优化
+====
     1、配置信息缓存
     php artisan config:cache //生成
     php artisan config:clear //取消
@@ -49,5 +58,13 @@ https://github.com/andersao/l5-repository
     4、自动加载
     composer dumpautoload -o
     5、关闭应用debug app.debug=false
+    6、开启php7的OPcache扩展,配置如下
+            opcache.memory_consumption=128
+            opcache.interned_strings_buffer=8
+            opcache.max_accelerated_files=4000
+            opcache.revalidate_freq=60
+            opcache.fast_shutdown=1
+            opcache.enable_cli=1
+    7、nginx开启gzip压缩
 
 

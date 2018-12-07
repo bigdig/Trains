@@ -1,0 +1,77 @@
+/* 培训详情 */
+
+.tabBoxSelect {
+  color: #333;
+}
+
+
+.courseTitleBox {
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  margin-left: 38rpx;
+  width: 710rpx;
+  height: 78rpx;
+  line-height: 78rpx;
+  border-bottom: 1px solid #ddd;
+}
+
+.courseTitle {
+  font-size: 28rpx;
+  color: #333;
+}
+
+
+
+.courseInfo {
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  margin-left: 38rpx;
+  width: 710rpx;
+  height: 191rpx;
+  border-bottom: 1px solid #ddd;
+  padding: 25rpx 0;
+}
+
+
+.courseLogo {
+  padding: 26rpx 6rpx 30rpx 0;
+  background-color: #333;
+  width: 287rpx;
+  height: 135rpx;
+}
+
+.people {
+  padding-right: 40rpx;
+  text-align: right;
+  font-size: 28rpx;
+  color: #333;
+}
+
+
+.courseBtn {
+  text-align: right;
+  padding: 20rpx 40rpx 25rpx 0;
+}
+.courseBtn .lineblock {
+  width: 190rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  font-size: 28rpx;
+  color: #888;
+  text-align: center;
+  border-radius: 29rpx;
+  border: solid 2rpx #cacaca;
+}
+.courseBtn .selBtn {
+  margin-left: 78rpx;
+  color: #fff;
+  border-color: #1AAD19;
+  background: #1AAD19;
+}
+.center{
+  text-align:center;
+   margin-top:35rpx;
+
+}

@@ -1,0 +1,28 @@
+<view  wx:for="{{dataList}}" wx:for-item="itemName" wx:key="{{itemName.id}}">
+ <view class="courseBox" data-id="{{itemName.id}}" data-trainid="{{itemName.get_train.id}}" catchtap='goTrainDetail'>
+      <view class="courseTitleBox flex">
+        <text class="courseTitle">{{itemName.get_train.title}}</text>
+      </view>
+      <view class="courseInfo flex">
+        <view class="one">
+          <image class="courseLogo" src="{{itemName.get_train.banner}}"></image>
+        </view>
+        <view class="one people">
+          <!-- 参训人员： -->
+          <view wx:for="{{itemName.get_students}}" wx:for-item="item" wx:for-index="idx"  wx:key="{{itemName.id}}">
+              <text class="block" wx:if="{{idx==0}}" >参训人员：{{item.get_nursery_user.student_name}}</text>
+              <text class="block" wx:else> {{item.get_nursery_user.student_name}}</text>
+          </view>
+        </view>
+      </view>  
+      <view class="courseBtn">
+        <text wx:if="{{itemName.get_train.get_charge.is_cert==1}}" class="lineblock selBtn" type="primary" data-id="{{itemName.id}}" data-trainid="{{itemName.get_train.id}}"  data-studentsid="{{itemName.get_students}}" catchtap='goTrainDetail'>查看培训证书</text>
+        <text wx:if="{{itemName.get_train.get_charge.is_cert==0}}" class="lineblock selBtn" type="primary" data-id="{{itemName.id}}" data-trainid="{{itemName.get_train.id}}"  data-studentsid="{{itemName.get_students}}">已完成</text>
+      </view>
+    </view>
+ </view>
+ <view class="center"  wx:if="{{!dataList.length}}">
+ <text>暂无数据</text>
+ </view>
+
+    
