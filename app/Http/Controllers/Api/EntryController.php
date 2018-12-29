@@ -249,7 +249,8 @@ class EntryController extends Controller
                         return response()->json(['code'=>'1014','msg'=>'报名人数超出限制','data'=>[]]);
                     }
                     $tmp = [$train_info->get_charge->attr1_price,$train_info->get_charge->attr2_price,$train_info->get_charge->attr3_price];
-                    $min_price = min($tmp);
+                    $min_price = array_filter($tmp);
+		    $min_price = min($tmp);
                     if($train_info->get_charge->unit =='2'){
                         $data['apply_form'] = 2;
                         $data['fee']        = $min_price/$data['apply_num'];
