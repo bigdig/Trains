@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Log;
 use App\Models\Entry;
 use App\Models\PayInfo;
+use DB;
 
 class CancelOrder extends Command
 {
@@ -40,13 +41,12 @@ class CancelOrder extends Command
      */
     public function handle()
     {
-        Log::info('取消订单'.date("Y-m-d H:i:s"));
         $lists = Entry::where('status',0)
             ->where('is_paid',0)
+            ->where( DB::Raw("UNIX_TIMESTAMP(created_at)"),'<' ,time()-30*60)
             ->get();
         foreach($lists as $list){
-            $pay_info = PayInfo::where('order_sn',$list->order_sn)->first();
-            if( empty($pay_info) && strtotime ($list->created_at)+30*60 <time() ){
+            if( !empty($list)){
                 Entry::where('id',$list->id)->update([
                     'status'=>2,
                     'remark'=>'30分钟未支付,系统取消订单'
