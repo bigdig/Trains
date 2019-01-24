@@ -15,6 +15,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Response;
 use Cache;
 use Config;
+use EasyWeChat\Factory;
 
 class TrainsController extends Controller
 {
@@ -97,6 +98,23 @@ class TrainsController extends Controller
         QrCode::format('png')->size(400)->generate($url,$filename);
         return response()->download($filename);
 
+    }
+    //生成培训详情页小程序码
+    public function trainQrCode($train_id=31,$client=1){
+        $config = config('wechat.mini');
+        $app = Factory::miniProgram($config[$client]);
+        $response = $app->app_code->get('/pages/index/signUP/index?train_id='.$train_id, [
+            'width' => 600,
+            'line_color' => [
+                'r' => 105,
+                'g' => 166,
+                'b' => 134,
+            ],
+        ]);
+        if ($response instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
+            $filename = $response->saveAs('../public/detail_qrcode', 'train_'.$train_id.'.png');
+        }
+        return env('APP_URL','http://xapp-test.teach.rybbaby.com').'/detail_qrcode/'.$filename;
     }
     /**
      * Show the form for creating a new resource.
