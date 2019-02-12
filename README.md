@@ -66,5 +66,6 @@ https://github.com/andersao/l5-repository
             opcache.fast_shutdown=1
             opcache.enable_cli=1
     7、nginx开启gzip压缩
-
-
+TIP
+---
+Email：lhf2008@yeah.net
