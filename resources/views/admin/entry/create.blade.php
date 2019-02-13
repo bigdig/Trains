@@ -22,7 +22,7 @@
                     <form action="{{ route('entry.store') }}" class="form-horizontal" id="entryForm" method="post">
                         {{ csrf_field() }}
                         <div class="form-body">
-                            <div class="form-group">
+                            <div class="form-group form-md-line-input">
                                 <label class="col-md-3 control-label" for="train_id">培训主题</label>
                                 <div class="col-md-9">
                                     <select class="checkbox form-control" name="train_id" id="train_id">
@@ -65,7 +65,7 @@
                                     <span class="help-block">{{ $errors->has('student_phone') ? $errors->first('student_phone') : '学员手机号' }}</span>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group form-md-line-input">
                                 <label class="col-md-3 control-label" for="student_sex">学员性别</label>
                                 <div class="col-md-9">
                                     <label class="radio-inline">
@@ -84,7 +84,7 @@
                                     <span class="help-block">{{ $errors->has('student_position') ? $errors->first('student_position') : '学员岗位' }}</span>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group form-md-line-input">
                                 <label class="col-md-3 control-label" for="payment">缴费方式</label>
                                 <div class="col-md-9">
                                     <label class="radio-inline">
@@ -101,13 +101,13 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group form-md-line-input">
                                 <label class="col-md-3 control-label" for="student_position">费用(元)</label>
                                 <div class="col-md-4">
                                     <input type="number" class="form-control " placeholder="" name="total_fee" id="total_fee" value="0">
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group form-md-line-input">
                                 <label class="col-md-3 control-label" for="pay_time">缴费日期</label>
                                 <div class="col-md-4">
                                     <input type="text" class="form-control" placeholder="" name="pay_time" id="pay_time" value="">
