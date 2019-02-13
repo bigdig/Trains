@@ -119,11 +119,11 @@ class EntryController extends Controller
     {
         //
 		if( Auth::user()->hasRole('admin') ){
-			$trains = Trains::where('status','2')->orderBy('id','desc')->get();
+			$trains = Trains::where('status','2')->where('train_end','>',date("Y-m-d"))->orderBy('id','desc')->get();
 		}elseif(Auth::user()->hasRole('qnursery')){
-			$trains = Trains::where('status','2')->where( 'train_category',Config::get('category.qnursery') )->orderBy('id','desc')->get();
+			$trains = Trains::where('status','2')->where('train_end','>',date("Y-m-d"))->where( 'train_category',Config::get('category.qnursery') )->orderBy('id','desc')->get();
 		}elseif(Auth::user()->hasRole('ynursery')){
-			$trains = Trains::where('status','2')->where( 'train_category',Config::get('category.ynursery') )->orderBy('id','desc')->get();
+			$trains = Trains::where('status','2')->where('train_end','>',date("Y-m-d"))->where( 'train_category',Config::get('category.ynursery') )->orderBy('id','desc')->get();
 		}
         return view('admin.entry.create',['trains'=>$trains]);
     }
